@@ -2,19 +2,22 @@
 
 Site estático com seis produtos e links de afiliado.
 
-## Conectar ao Worker existente
+## Cloudflare
 
-No painel da Cloudflare, abra o Worker `achadosdoethan`, vá a Settings > Builds e conecte este repositório do GitHub.
+Conecte este repositório ao novo Worker `achadosdoethan-vitrine`.
 
+- Nome do projeto: `achadosdoethan-vitrine`
 - Branch de produção: `main`
 - Diretório raiz: `/`
 - Comando de build: deixar vazio
 - Comando de deploy: `npx wrangler deploy`
+- Preview builds: pode deixar desativado durante a configuração inicial
+- Cloudflare Access: desativado para acesso público à vitrine
 
-O nome do Worker e o nome em `wrangler.json` devem ser iguais. Autorize somente o repositório desta vitrine na integração do GitHub.
+O nome do projeto deve corresponder ao nome em `wrangler.json`. Confira o primeiro deploy e a URL exibida pela Cloudflare antes de substituir o link do Instagram.
 
 ## Atualizações
 
-Os arquivos públicos ficam em `public/`. Alterações enviadas à branch de produção disparam a publicação da Cloudflare após a conexão estar ativa. Confira o primeiro build e o endereço publicado antes de considerar a automação validada.
+Os arquivos públicos ficam em `public/`. Atualizações da branch de produção disparam a publicação quando a conexão Git estiver ativa. Valide o fluxo com uma atualização e a leitura da página publicada.
 
-Não inclua senhas ou tokens nos arquivos. Preserve os links de afiliado e só publique preços e características confirmados.
+Não inclua senhas ou tokens no repositório. Preserve os links de afiliado e use somente informações confirmadas.

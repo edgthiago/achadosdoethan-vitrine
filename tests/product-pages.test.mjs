@@ -24,7 +24,7 @@ test('página individual hidrata sem perder produto nem link de afiliado', async
  dom.window.eval(await readFile(new URL('../dist'+script, import.meta.url), 'utf8'));
  await new Promise(r => setTimeout(r,100));
  assert.equal(dom.window.document.querySelectorAll('article.card').length, 1);
- assert.equal(dom.window.document.querySelector('.cta').href, products[0].url);
+ assert.equal(dom.window.document.querySelector('.cta').href, products.find(p => p.id === 'kit-leggings').url);
  assert.deepEqual(errors, []); dom.window.close();
 });
 test('preços em reais ordenam numericamente e faixas não se sobrepõem', () => {

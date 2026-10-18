@@ -17,7 +17,8 @@ async function open(url = 'https://achadosdoethan.com.br/') {
   const dom = new JSDOM(html, { url, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole: vc });
   dom.window.HTMLElement.prototype.scrollIntoView = function () { dom.scrolledTo = this.id; };
   dom.window.eval(code);
-  await settle();
+  // Allow hydration and mount effects to finish before simulating input.
+  await new Promise(resolve => setTimeout(resolve, 250));
   return { dom, window: dom.window, document: dom.window.document, errors };
 }
 
@@ -77,4 +78,32 @@ test('restaura links filtrados e links diretos, copia produto e cupom', async ()
     assert.equal(copied, 'POUPAMAIS');
     assert.deepEqual(errors, []);
   } finally { dom.window.close(); }
+});
+
+test('favoritos persistem, filtram e podem ser removidos sem cadastro', async () => {
+ const {dom,window,document,errors}=await open();
+ try {
+  document.querySelector('#kit-leggings .favorite').click(); await settle();
+  assert.deepEqual(JSON.parse(window.localStorage.getItem('ethan-favorites')),['kit-leggings']);
+  document.querySelector('.saved-filter').click(); await settle();
+  assert.equal(document.querySelectorAll('article.card').length,1);
+  document.querySelector('#kit-leggings .favorite').click(); await settle();
+  assert.equal(document.querySelectorAll('article.card').length,0);
+  assert.match(document.querySelector('#empty').textContent,/favoritos começam aqui/);
+  document.querySelector('#empty-reset').click(); await settle();
+  assert.equal(document.querySelectorAll('article.card').length,products.length);
+  assert.deepEqual(errors,[]);
+ } finally {dom.window.close();}
+});
+test('coleção compartilhada restaura seleção e categoria permite sair dela', async () => {
+ const {dom,window,document,errors}=await open('https://achadosdoethan.com.br/?colecao=looks-de-academia#produtos');
+ try {
+  assert.equal(document.querySelectorAll('article.card').length,6);
+  assert.ok(document.querySelector('#kit-leggings'));
+  assert.equal(document.querySelector('#result-text').textContent,'Looks de academia');
+  document.querySelector('[data-filter="Casa"]').click();await settle();
+  assert.ok([...document.querySelectorAll('article.card')].every(c=>c.dataset.category==='Casa'));
+  assert.equal(new URL(window.location.href).searchParams.has('colecao'),false);
+  assert.deepEqual(errors,[]);
+ }finally{dom.window.close();}
 });

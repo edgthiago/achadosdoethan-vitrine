@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import products from './data/products.json';
+import catalog from './data/products.json';
+import { collections, isRecent, readFavorites } from './collections.js';
+const products = catalog;
 import { categories, featuredProductId, matchesProduct, readCatalogLocation, catalogUrl, shareProduct, productUrl, selectProducts } from './catalog.js';
 
 const instagram = 'https://www.instagram.com/achadosdoethan/';
@@ -14,30 +16,13 @@ function Brand() {
 }
 
 function Hero({ onShowProduct }) {
-  return <>
-    <section className="hero hero-home">
-      <div className="hero-copy">
-        <p className="eyebrow">🛍️ CASA · MODA · TECNOLOGIA · BELEZA</p>
-        <h1>Achados com informação.<br/><em>Compra com atenção.</em></h1>
-        <p>Viu um produto no Instagram? Encontre aqui os detalhes e acesse o anúncio para conferir preço, frete e disponibilidade atualizados.</p>
-        <a className="hero-cta" href="#produtos">Explorar a vitrine ↓</a>
-      </div>
-      <a className="hero-visual hero-leggings" href={`#${featured.id}`} onClick={event => {
-        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        event.preventDefault();
-        onShowProduct(featured.id);
-      }} aria-label="Ver o kit com 3 leggings femininas em destaque">
-        <img src={featured.image.src} alt="Kit com 3 leggings femininas em destaque na vitrine" fetchPriority="high" width="800" height="800"/>
-        <span className="hero-feature-tag">DESTAQUE DA VITRINE</span>
-        <span className="hero-feature-title">{featured.title}<span>Ver detalhes ↗</span></span>
-      </a>
-    </section>
-    <div className="trust-strip" aria-label="Como usar a vitrine">
-      <div><strong>Encontre o achado</strong><span>Procure pelo produto que viu no Instagram.</span></div>
-      <div><strong>Confira os detalhes</strong><span>Veja medidas, vendedor, frete e condições.</span></div>
-      <div><strong>Confirme no anúncio</strong><span>Preço e disponibilidade podem mudar.</span></div>
-    </div>
-  </>;
+  return <a className="hero-visual compact-feature" href={'#' + featured.id} onClick={event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault(); onShowProduct(featured.id);
+  }} aria-label="Ver o kit com 3 leggings femininas em destaque">
+    <img src={featured.image.src} alt={featured.image.alt} width="160" height="160" loading="lazy"/>
+    <span><small>ESCOLHA EM DESTAQUE</small><strong>{featured.title}</strong><em>Conhecer o achado ↗</em></span>
+  </a>;
 }
 
 function Coupon({ notify }) {
@@ -61,7 +46,7 @@ function Coupon({ notify }) {
   </section>;
 }
 
-function ProductCard({ product, notify }) {
+function ProductCard({ product, notify, saved = false, onFavorite, expanded = false }) {
   async function share() {
     try {
       const result = await shareProduct(product, window.location.href, navigator);
@@ -74,14 +59,15 @@ function ProductCard({ product, notify }) {
   return <article id={product.id} className={`card${product.isNew ? ' new-card' : ''}`} data-category={product.category} data-new={product.isNew ? 'true' : undefined} data-search={product.search}>
     <div className={product.visualClass}>
       <img src={product.image.src} alt={product.image.alt} width={product.image.width} height={product.image.height} loading="lazy" decoding="async"/>
-      <span className="tag">{product.badge}</span>
+      <span className="tag">{product.isNew ? "Novo" : product.badge}</span>
+      <button type="button" className="favorite" aria-label={`Salvar ${product.title}`} aria-pressed={saved} onClick={() => onFavorite(product.id)}>{saved ? "♥" : "♡"}</button>
     </div>
     <div className="copy">
       <p className="card-category">{product.category}</p>
       <h3><a className="product-title-link" href={productUrl("https://achadosdoethan.com.br/", product.id)}>{product.title}</a></h3>
       <div className="price-row"><strong>{product.price}</strong>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
       <p className="price-note">{product.priceNote}</p>
-      <details className="card-info">
+      <details className="card-info" open={expanded || undefined}>
         <summary>Detalhes e cuidados antes de comprar</summary>
         <p>{product.description}</p>
         <p className="tip">{product.tip}</p>
@@ -112,6 +98,25 @@ function ShoppingGuide() {
 }
 
 export default function App({ initialProductId = null }) {
+  const [clock, setClock] = useState(null);
+  const products = useMemo(() => catalog.map(p => ({...p, isNew: clock !== null && isRecent(p, clock)})), [clock]);
+  const [favorites, setFavorites] = useState([]);
+  const [onlySaved, setOnlySaved] = useState(false);
+  const [collectionId, setCollectionId] = useState('');
+  const collection = collections.find(c => c.id === collectionId);
+  useEffect(() => {
+    setClock(Date.now());
+    try { setFavorites(readFavorites(localStorage.getItem('ethan-favorites'), catalog)); } catch {}
+    const sync = e => { if(e.key === 'ethan-favorites') setFavorites(readFavorites(e.newValue, catalog)); };
+    window.addEventListener('storage',sync);
+    const timer = setInterval(() => setClock(Date.now()), 60000);
+    return () => { window.removeEventListener('storage',sync); clearInterval(timer); };
+  }, []);
+  function toggleFavorite(id) {
+    const next = favorites.includes(id) ? favorites.filter(v => v !== id) : [...favorites,id];
+    setFavorites(next);
+    try { localStorage.setItem('ethan-favorites', JSON.stringify(next)); notify(next.includes(id) ? 'Salvo nos favoritos deste navegador.' : 'Removido dos favoritos.'); } catch { notify('Salvo apenas nesta visita: armazenamento indisponível.'); }
+  }
   const [category, setCategory] = useState('Todos');
   const [query, setQuery] = useState('');
   const [priceRange, setPriceRange] = useState('all');
@@ -131,17 +136,22 @@ export default function App({ initialProductId = null }) {
     const url = new URL(window.location.href);
     url.searchParams.delete('q');
     url.searchParams.delete('categoria');
+    url.searchParams.delete('colecao');
     url.hash = id;
     window.history.pushState(null, '', url);
     setCategory('Todos');
     setQuery('');
     setPriceRange('all');
+    setCollectionId('');
+    setOnlySaved(false);
     scrollToProduct(id);
   }, [scrollToProduct]);
 
   useEffect(() => {
     function restoreLocation() {
       const current = readCatalogLocation(window.location.href, products);
+      const requestedCollection = new URL(window.location.href).searchParams.get('colecao');
+      setCollectionId(!current.productId && collections.some(c => c.id === requestedCollection) ? requestedCollection : '');
       setCategory(current.category);
       setQuery(current.query);
       if (current.productId) scrollToProduct(current.productId);
@@ -159,8 +169,12 @@ export default function App({ initialProductId = null }) {
   }, [scrollToProduct]);
 
   useEffect(() => {
-    if (locationReady && !initialProductId) window.history.replaceState(null, '', catalogUrl(window.location.href, category, query));
-  }, [category, query, locationReady]);
+    if (locationReady && !initialProductId) {
+      const url = new URL(catalogUrl(window.location.href, category, query));
+      collectionId ? url.searchParams.set('colecao',collectionId) : url.searchParams.delete('colecao');
+      window.history.replaceState(null, '', url);
+    }
+  }, [category, query, locationReady, collectionId, initialProductId]);
 
   function notify(message) {
     setToast(message);
@@ -173,12 +187,14 @@ export default function App({ initialProductId = null }) {
     setQuery('');
     setPriceRange('all');
     setOrder('featured');
+    setCollectionId('');
+    setOnlySaved(false);
     searchRef.current?.focus();
   }
 
-  const visibleProducts = useMemo(() => selectProducts(products, category, query, priceRange, order), [category, query, priceRange, order]);
-  const counts = useMemo(() => Object.fromEntries(categories.map(value => [value, products.filter(product => matchesProduct(product, value)).length])), []);
-  const resultText = query.trim() ? `Resultados para “${query.trim()}”` : category === 'Todos' ? 'Todos os achados' : category === 'Novos' ? 'Adicionados recentemente' : `Categoria: ${category}`;
+  const visibleProducts = useMemo(() => selectProducts(products, category, query, priceRange, order).filter(p => (!collection || collection.ids.includes(p.id)) && (!onlySaved || favorites.includes(p.id))), [products, category, query, priceRange, order, collection, onlySaved, favorites]);
+  const counts = useMemo(() => Object.fromEntries(categories.map(value => [value, products.filter(product => matchesProduct(product, value)).length])), [products]);
+  const resultText = onlySaved ? 'Seus favoritos' : collection ? collection.title : query.trim() ? `Resultados para “${query.trim()}”` : category === 'Todos' ? 'Todos os achados' : category === 'Novos' ? 'Adicionados recentemente' : `Categoria: ${category}`;
 
   const selectedProduct = products.find(p => p.id === initialProductId);
   if (selectedProduct) return <div className="wrap">
@@ -186,7 +202,8 @@ export default function App({ initialProductId = null }) {
     <main className="product-page"><a href="/#produtos" className="back-link">← Voltar à vitrine</a>
       <p className="eyebrow">ACHADOS DO ETHAN · {selectedProduct.category}</p>
       <h1>{selectedProduct.title}</h1>
-      <div className="grid product-detail"><ProductCard product={selectedProduct} notify={notify}/></div>
+      <div className="grid product-detail"><ProductCard product={selectedProduct} notify={notify} expanded saved={favorites.includes(selectedProduct.id)} onFavorite={toggleFavorite}/></div>
+      <section className="related"><h2>Mais achados de {selectedProduct.category.toLowerCase()}</h2><div className="instagram-list">{products.filter(p=>p.category===selectedProduct.category && p.id!==selectedProduct.id).slice(0,4).map(p=><a key={p.id} href={productUrl("https://achadosdoethan.com.br/",p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy"/><span><strong>{p.title}</strong><small>Ver detalhes ↗</small></span></a>)}</div></section>
       <ShoppingGuide/>
     </main><p className="toast" role="status" hidden={!toast}>{toast}</p>
   </div>;
@@ -195,26 +212,29 @@ export default function App({ initialProductId = null }) {
     <div className="wrap">
       <header><Brand/><a className="insta" href={instagram} target="_blank" rel="noopener noreferrer">Ver Instagram ↗</a></header>
       <main id="conteudo">
-        <Hero onShowProduct={showProduct}/>
+        <section className="welcome"><p className="eyebrow">SUA VITRINE DE ACHADOS</p><h1>Seu próximo achado está aqui.</h1><p>Casa, moda e cuidados para a sua rotina.</p><form className="quick-search" onSubmit={e=>{e.preventDefault();document.getElementById('produtos')?.scrollIntoView({block:'start'});}}><label className="sr-only" htmlFor="top-search">O que você está procurando?</label><input id="top-search" type="search" placeholder="O que você está procurando?" value={query} onChange={e=>setQuery(e.target.value)}/><button type="submit">Buscar</button></form></section>
+        <section className="collections" aria-labelledby="collections-title"><div className="section-heading"><h2 id="collections-title">Explore por coleção</h2><span>Escolhas para cada momento</span></div><div className="collection-grid">{collections.map(c=>{const cover=products.find(p=>p.id===c.cover);return <a key={c.id} href={'/?colecao='+c.id+'#produtos'} className="collection-tile"><img src={cover.image.src} alt={cover.image.alt} width="300" height="220" loading="lazy"/><span><strong>{c.title}</strong><small>{c.subtitle}</small></span><b aria-hidden="true">↗</b></a>;})}</div></section>
         <section className="instagram-picks" aria-labelledby="instagram-title">
           <div><p className="eyebrow">DO PERFIL PARA A VITRINE</p><h2 id="instagram-title">Viu no Instagram?</h2><p>Atalhos para os achados divulgados no perfil.</p></div>
           <div className="instagram-list">{['kit-leggings', 'jeans', 'medidor-pressao'].map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>Ver detalhes ↗</small></span></a>)}</div>
         </section>
+        <Hero onShowProduct={showProduct}/>
         <section id="produtos" aria-labelledby="products-title">
           <p className="affiliate-note">Links de afiliado: podemos receber comissão por compras qualificadas.</p>
-          <Coupon notify={notify}/>
           <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p>Preços vistos nas datas indicadas; confira o valor atualizado no anúncio antes de comprar.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>
           <label className="search-label" htmlFor="search">Buscar produto</label>
           <input ref={searchRef} id="search" className="search" type="search" placeholder="Leggings, conjunto fitness, tênis, jeans, mouse…" value={query} onChange={event => setQuery(event.target.value)}/>
-          <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => setCategory(value)}>{value} ({counts[value]})</button>)}</div>
+          <div className="saved-toolbar"><button type="button" className="saved-filter" aria-pressed={onlySaved} onClick={()=>setOnlySaved(!onlySaved)}>♡ Favoritos ({favorites.length})</button><span>Salvos neste navegador, sem cadastro.</span></div>
+          <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => {setCategory(value);setCollectionId('');}}>{value} ({counts[value]})</button>)}</div>
           <div className="catalog-selects">
             <label>Faixa de preço<select value={priceRange} onChange={e => setPriceRange(e.target.value)}><option value="all">Todos os preços</option><option value="under50">Menos de R$ 50</option><option value="from50to100">R$ 50 a menos de R$ 100</option><option value="from100to300">R$ 100 a menos de R$ 300</option><option value="over300">R$ 300 ou mais</option></select></label>
             <label>Ordenar por<select value={order} onChange={e => setOrder(e.target.value)}><option value="featured">Destaques da vitrine</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label>
           </div>
-          <div className="catalog-toolbar"><p id="result-text" aria-live="polite">{resultText}</p><button type="button" id="reset" hidden={category === 'Todos' && !query.trim() && priceRange === 'all' && order === 'featured'} onClick={reset}>Limpar filtros</button></div>
-          <div className="grid">{visibleProducts.map(product => <ProductCard key={product.id} product={product} notify={notify}/>)}</div>
-          {visibleProducts.length === 0 && <div className="empty" id="empty" role="status"><strong>Nenhum achado encontrado</strong><p>Tente outro nome ou volte para todos os produtos.</p><button type="button" id="empty-reset" onClick={reset}>Ver todos os achados</button></div>}
+          <div className="catalog-toolbar"><p id="result-text" aria-live="polite">{resultText}</p><button type="button" id="reset" hidden={category === 'Todos' && !query.trim() && priceRange === 'all' && order === 'featured' && !collectionId && !onlySaved} onClick={reset}>Limpar filtros</button></div>
+          <div className="grid">{visibleProducts.map(product => <ProductCard key={product.id} product={product} notify={notify} saved={favorites.includes(product.id)} onFavorite={toggleFavorite}/>)}</div>
+          {visibleProducts.length === 0 && <div className="empty" id="empty" role="status"><strong>{onlySaved && !favorites.length ? "Seus favoritos começam aqui" : "Nenhum achado encontrado"}</strong><p>{onlySaved && !favorites.length ? "Toque no coração de um produto para salvar e encontrar depois." : "Tente outro nome ou limpe os filtros."}</p><button type="button" id="empty-reset" onClick={reset}>Ver todos os achados</button></div>}
         </section>
+        <Coupon notify={notify}/>
         <ShoppingGuide/>
       </main>
       <footer><div className="footrow"><strong>Achados do Ethan</strong><a href={instagram} target="_blank" rel="noopener noreferrer">@achadosdoethan ↗</a></div><p>Transparência: esta página contém links de afiliado. Não somos uma loja oficial do Mercado Livre. Consulte todas as condições no anúncio antes de comprar.</p><span>© 2026 Achados do Ethan</span></footer>

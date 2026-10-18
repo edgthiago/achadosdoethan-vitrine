@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { JSDOM, VirtualConsole } from 'jsdom';
+import { collections } from '../src/collections.js';
 
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
 const products = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url)));
@@ -98,7 +99,7 @@ test('favoritos persistem, filtram e podem ser removidos sem cadastro', async ()
 test('coleção compartilhada restaura seleção e categoria permite sair dela', async () => {
  const {dom,window,document,errors}=await open('https://achadosdoethan.com.br/?colecao=looks-de-academia#produtos');
  try {
-  assert.equal(document.querySelectorAll('article.card').length,6);
+  assert.equal(document.querySelectorAll('article.card').length,collections.find(collection=>collection.id==='looks-de-academia').ids.length);
   assert.ok(document.querySelector('#kit-leggings'));
   assert.equal(document.querySelector('#result-text').textContent,'Looks de academia');
   document.querySelector('[data-filter="Casa"]').click();await settle();

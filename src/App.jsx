@@ -77,15 +77,21 @@ function ProductCard({ product, notify }) {
       <span className="tag">{product.badge}</span>
     </div>
     <div className="copy">
+      <p className="card-category">{product.category}</p>
       <h3>{product.title}</h3>
-      <div className="price-row"><strong>{product.price}</strong>{product.priceLabel && <span>{product.priceLabel}</span>}</div>
+      <div className="price-row"><strong>{product.price}</strong>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
       <p className="price-note">{product.priceNote}</p>
-      <p>{product.description}</p>
-      <p className="tip">{product.tip}</p>
-      <a className="cta" href={product.url} target="_blank" rel="sponsored noopener noreferrer">{product.cta}</a>
-      {product.details && <details className="product-details"><summary>{product.details.summary}</summary><p>{product.details.text}</p></details>}
-      <span className="micro">{product.disclosure}</span>
-      <button type="button" className="share-product" aria-label={`Compartilhar ${product.title}`} onClick={share}>Compartilhar produto ↗</button>
+      <details className="card-info">
+        <summary>Detalhes e cuidados antes de comprar</summary>
+        <p>{product.description}</p>
+        <p className="tip">{product.tip}</p>
+        {product.details && <p><strong>{product.details.summary}:</strong> {product.details.text}</p>}
+      </details>
+      <div className="card-actions">
+        <a className="cta" href={product.url} target="_blank" rel="sponsored noopener noreferrer" aria-label={`Ver ${product.title} no Mercado Livre`}>Ver no Mercado Livre <span aria-hidden="true">↗</span></a>
+        <button type="button" className="share-product" aria-label={`Compartilhar ${product.title}`} onClick={share}>Compartilhar produto <span aria-hidden="true">↗</span></button>
+        <span className="micro">{product.disclosure}</span>
+      </div>
     </div>
   </article>;
 }

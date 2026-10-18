@@ -30,8 +30,8 @@ test('link de um produto remove filtros que poderiam escondê-lo', () => {
   const url = catalogUrl('https://achadosdoethan.com.br/?utm_source=instagram', 'Moda', 'calça');
   assert.equal(new URL(url).searchParams.get('utm_source'), 'instagram');
   assert.equal(new URL(url).searchParams.get('q'), 'calça');
-  assert.equal(productUrl(url, 'kit-leggings'), 'https://achadosdoethan.com.br/#kit-leggings');
-  const filtered = catalogUrl('https://achadosdoethan.com.br/#kit-leggings', 'Casa', 'torneira');
+  assert.equal(productUrl(url, 'kit-leggings'), 'https://achadosdoethan.com.br/produto/kit-leggings/');
+  const filtered = catalogUrl('https://achadosdoethan.com.br/produto/kit-leggings/', 'Casa', 'torneira');
   assert.deepEqual(readCatalogLocation(filtered, products), { category: 'Casa', query: 'torneira', productId: null });
 });
 
@@ -39,7 +39,7 @@ test('compartilhamento usa API nativa ou copia o link exato do produto', async (
   const product = products[0];
   let payload, copied;
   assert.equal(await shareProduct(product, 'https://achadosdoethan.com.br/?q=teste', { share: async data => { payload = data; } }), 'shared');
-  assert.equal(payload.url, 'https://achadosdoethan.com.br/#kit-leggings');
+  assert.equal(payload.url, 'https://achadosdoethan.com.br/produto/kit-leggings/');
   assert.equal(await shareProduct(product, 'https://achadosdoethan.com.br/', { clipboard: { writeText: async text => { copied = text; } } }), 'copied');
   assert.equal(copied, payload.url);
   assert.equal(await shareProduct(product, 'https://achadosdoethan.com.br/', {}), payload.url);

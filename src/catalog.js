@@ -29,8 +29,19 @@ export function catalogUrl(href, category, query) {
 export function productUrl(href, id) {
   const url = new URL(href);
   url.search = '';
-  url.hash = id;
+  url.pathname = '/produto/' + encodeURIComponent(id) + '/';
+  url.hash = '';
   return url.href;
+}
+
+export const priceValue = product => Number(product.price.replace(/[^\d,]/g, '').replace(',', '.'));
+export function selectProducts(products, category, query, range = 'all', order = 'featured') {
+  const ranges = { all: [0, Infinity], under50: [0, 50], from50to100: [50, 100], from100to300: [100, 300], over300: [300, Infinity] };
+  const [min, max] = ranges[range] || ranges.all;
+  const selected = products.filter(p => matchesProduct(p, category, query) && priceValue(p) >= min && (max === Infinity || priceValue(p) < max));
+  if (order === 'price-asc') selected.sort((a,b) => priceValue(a) - priceValue(b));
+  if (order === 'price-desc') selected.sort((a,b) => priceValue(b) - priceValue(a));
+  return selected;
 }
 
 export async function shareProduct(product, href, nav) {

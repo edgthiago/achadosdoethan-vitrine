@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import products from './data/products.json';
-import { categories, featuredProductId, matchesProduct, readCatalogLocation, catalogUrl, shareProduct } from './catalog.js';
+import { categories, featuredProductId, matchesProduct, readCatalogLocation, catalogUrl, shareProduct, productUrl, selectProducts } from './catalog.js';
 
 const instagram = 'https://www.instagram.com/achadosdoethan/';
 const featured = products.find(product => product.id === featuredProductId);
@@ -78,7 +78,7 @@ function ProductCard({ product, notify }) {
     </div>
     <div className="copy">
       <p className="card-category">{product.category}</p>
-      <h3>{product.title}</h3>
+      <h3><a className="product-title-link" href={productUrl("https://achadosdoethan.com.br/", product.id)}>{product.title}</a></h3>
       <div className="price-row"><strong>{product.price}</strong>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
       <p className="price-note">{product.priceNote}</p>
       <details className="card-info">
@@ -111,9 +111,11 @@ function ShoppingGuide() {
   </>;
 }
 
-export default function App() {
+export default function App({ initialProductId = null }) {
   const [category, setCategory] = useState('Todos');
   const [query, setQuery] = useState('');
+  const [priceRange, setPriceRange] = useState('all');
+  const [order, setOrder] = useState('featured');
   const [locationReady, setLocationReady] = useState(false);
   const [toast, setToast] = useState('');
   const searchRef = useRef(null);
@@ -133,6 +135,7 @@ export default function App() {
     window.history.pushState(null, '', url);
     setCategory('Todos');
     setQuery('');
+    setPriceRange('all');
     scrollToProduct(id);
   }, [scrollToProduct]);
 
@@ -156,7 +159,7 @@ export default function App() {
   }, [scrollToProduct]);
 
   useEffect(() => {
-    if (locationReady) window.history.replaceState(null, '', catalogUrl(window.location.href, category, query));
+    if (locationReady && !initialProductId) window.history.replaceState(null, '', catalogUrl(window.location.href, category, query));
   }, [category, query, locationReady]);
 
   function notify(message) {
@@ -168,19 +171,35 @@ export default function App() {
   function reset() {
     setCategory('Todos');
     setQuery('');
+    setPriceRange('all');
+    setOrder('featured');
     searchRef.current?.focus();
   }
 
-  const visibleProducts = useMemo(() => products.filter(product => matchesProduct(product, category, query)), [category, query]);
+  const visibleProducts = useMemo(() => selectProducts(products, category, query, priceRange, order), [category, query, priceRange, order]);
   const counts = useMemo(() => Object.fromEntries(categories.map(value => [value, products.filter(product => matchesProduct(product, value)).length])), []);
   const resultText = query.trim() ? `Resultados para “${query.trim()}”` : category === 'Todos' ? 'Todos os achados' : category === 'Novos' ? 'Adicionados recentemente' : `Categoria: ${category}`;
 
+  const selectedProduct = products.find(p => p.id === initialProductId);
+  if (selectedProduct) return <div className="wrap">
+    <header><Brand/><a className="insta" href="/#produtos">Ver toda a vitrine ↗</a></header>
+    <main className="product-page"><a href="/#produtos" className="back-link">← Voltar à vitrine</a>
+      <p className="eyebrow">ACHADOS DO ETHAN · {selectedProduct.category}</p>
+      <h1>{selectedProduct.title}</h1>
+      <div className="grid product-detail"><ProductCard product={selectedProduct} notify={notify}/></div>
+      <ShoppingGuide/>
+    </main><p className="toast" role="status" hidden={!toast}>{toast}</p>
+  </div>;
   return <>
     <a className="skip-link" href="#conteudo">Ir para os produtos</a>
     <div className="wrap">
       <header><Brand/><a className="insta" href={instagram} target="_blank" rel="noopener noreferrer">Ver Instagram ↗</a></header>
       <main id="conteudo">
         <Hero onShowProduct={showProduct}/>
+        <section className="instagram-picks" aria-labelledby="instagram-title">
+          <div><p className="eyebrow">DO PERFIL PARA A VITRINE</p><h2 id="instagram-title">Viu no Instagram?</h2><p>Atalhos para os achados divulgados no perfil.</p></div>
+          <div className="instagram-list">{['kit-leggings', 'jeans', 'medidor-pressao'].map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>Ver detalhes ↗</small></span></a>)}</div>
+        </section>
         <section id="produtos" aria-labelledby="products-title">
           <p className="affiliate-note">Links de afiliado: podemos receber comissão por compras qualificadas.</p>
           <Coupon notify={notify}/>
@@ -188,7 +207,11 @@ export default function App() {
           <label className="search-label" htmlFor="search">Buscar produto</label>
           <input ref={searchRef} id="search" className="search" type="search" placeholder="Leggings, conjunto fitness, tênis, jeans, mouse…" value={query} onChange={event => setQuery(event.target.value)}/>
           <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => setCategory(value)}>{value} ({counts[value]})</button>)}</div>
-          <div className="catalog-toolbar"><p id="result-text" aria-live="polite">{resultText}</p><button type="button" id="reset" hidden={category === 'Todos' && !query.trim()} onClick={reset}>Limpar filtros</button></div>
+          <div className="catalog-selects">
+            <label>Faixa de preço<select value={priceRange} onChange={e => setPriceRange(e.target.value)}><option value="all">Todos os preços</option><option value="under50">Menos de R$ 50</option><option value="from50to100">R$ 50 a menos de R$ 100</option><option value="from100to300">R$ 100 a menos de R$ 300</option><option value="over300">R$ 300 ou mais</option></select></label>
+            <label>Ordenar por<select value={order} onChange={e => setOrder(e.target.value)}><option value="featured">Destaques da vitrine</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label>
+          </div>
+          <div className="catalog-toolbar"><p id="result-text" aria-live="polite">{resultText}</p><button type="button" id="reset" hidden={category === 'Todos' && !query.trim() && priceRange === 'all' && order === 'featured'} onClick={reset}>Limpar filtros</button></div>
           <div className="grid">{visibleProducts.map(product => <ProductCard key={product.id} product={product} notify={notify}/>)}</div>
           {visibleProducts.length === 0 && <div className="empty" id="empty" role="status"><strong>Nenhum achado encontrado</strong><p>Tente outro nome ou volte para todos os produtos.</p><button type="button" id="empty-reset" onClick={reset}>Ver todos os achados</button></div>}
         </section>

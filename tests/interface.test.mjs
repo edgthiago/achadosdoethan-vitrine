@@ -71,7 +71,7 @@ test('restaura links filtrados e links diretos, copia produto e cupom', async ()
     Object.defineProperty(window.navigator, 'clipboard', { value: { writeText: async value => { copied = value; } }, configurable: true });
     document.querySelector('#kit-leggings .share-product').click();
     await settle();
-    assert.equal(copied, 'https://achadosdoethan.com.br/#kit-leggings');
+    assert.equal(copied, 'https://achadosdoethan.com.br/produto/kit-leggings/');
     document.querySelector('#copy-coupon').click();
     await settle();
     assert.equal(copied, 'POUPAMAIS');

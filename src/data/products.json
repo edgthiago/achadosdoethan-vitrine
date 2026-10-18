@@ -1,28 +1,5 @@
 [
   {
-    "id": "kit-leggings",
-    "category": "Moda",
-    "isNew": false,
-    "search": "kit 3 calças leggings legging feminina fitness academia sortidas 36 42",
-    "title": "Kit com 3 leggings femininas",
-    "image": {
-      "src": "https://http2.mlstatic.com/D_Q_NP_2X_968450-MLB83802436041_042025-V.webp",
-      "alt": "Kit com 3 leggings fitness em cores sortidas, conforme fotos do anúncio",
-      "width": 800,
-      "height": 800
-    },
-    "visualClass": "visual",
-    "badge": "Em destaque · Oferta",
-    "price": "R$ 57,90",
-    "priceLabel": "10% OFF",
-    "priceNote": "De R$ 64,99, conforme a página consultada em 16/10/2026. Preço sujeito a mudança.",
-    "description": "Kit com 3 leggings fitness em cores sortidas, conforme o anúncio. Confira tamanhos e opções disponíveis.",
-    "tip": "Confira composição, medidas, variações disponíveis e avaliações recentes no anúncio.",
-    "url": "https://meli.la/2zMoZpF",
-    "cta": "Conferir oferta no Mercado Livre ↗",
-    "disclosure": "Publicidade · Link de afiliado · Confira preço e estoque atualizados"
-  },
-  {
     "id": "kit-fitness-camiseta-feminino",
     "category": "Fitness",
     "isNew": true,
@@ -45,6 +22,29 @@
     "cta": "Conferir no Mercado Livre ↗",
     "disclosure": "Publicidade · Link de afiliado · Confira preço e disponibilidade",
     "addedAt": "2026-10-18T00:00:00-03:00"
+  },
+  {
+    "id": "kit-leggings",
+    "category": "Moda",
+    "isNew": false,
+    "search": "kit 3 calças leggings legging feminina fitness academia sortidas 36 42",
+    "title": "Kit com 3 leggings femininas",
+    "image": {
+      "src": "https://http2.mlstatic.com/D_Q_NP_2X_968450-MLB83802436041_042025-V.webp",
+      "alt": "Kit com 3 leggings fitness em cores sortidas, conforme fotos do anúncio",
+      "width": 800,
+      "height": 800
+    },
+    "visualClass": "visual",
+    "badge": "Oferta",
+    "price": "R$ 57,90",
+    "priceLabel": "10% OFF",
+    "priceNote": "De R$ 64,99, conforme a página consultada em 16/10/2026. Preço sujeito a mudança.",
+    "description": "Kit com 3 leggings fitness em cores sortidas, conforme o anúncio. Confira tamanhos e opções disponíveis.",
+    "tip": "Confira composição, medidas, variações disponíveis e avaliações recentes no anúncio.",
+    "url": "https://meli.la/2zMoZpF",
+    "cta": "Conferir oferta no Mercado Livre ↗",
+    "disclosure": "Publicidade · Link de afiliado · Confira preço e estoque atualizados"
   },
   {
     "id": "bolsa-termica-mao-lancheira",

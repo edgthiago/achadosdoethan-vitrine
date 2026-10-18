@@ -19,7 +19,7 @@ function Hero({ onShowProduct }) {
   return <a className="hero-visual compact-feature" href={'#' + featured.id} onClick={event => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault(); onShowProduct(featured.id);
-  }} aria-label="Ver o kit com 3 leggings femininas em destaque">
+  }} aria-label={`Ver ${featured.title} em destaque`}>
     <img src={featured.image.src} alt={featured.image.alt} width="160" height="160" loading="lazy"/>
     <span><small>ESCOLHA EM DESTAQUE</small><strong>{featured.title}</strong><em>Conhecer o achado ↗</em></span>
   </a>;

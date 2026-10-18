@@ -39,7 +39,7 @@ test('compartilhamento usa API nativa ou copia o link exato do produto', async (
   const product = products[0];
   let payload, copied;
   assert.equal(await shareProduct(product, 'https://achadosdoethan.com.br/?q=teste', { share: async data => { payload = data; } }), 'shared');
-  assert.equal(payload.url, 'https://achadosdoethan.com.br/produto/kit-leggings/');
+  assert.equal(payload.url, 'https://achadosdoethan.com.br/produto/kit-fitness-camiseta-feminino/');
   assert.equal(await shareProduct(product, 'https://achadosdoethan.com.br/', { clipboard: { writeText: async text => { copied = text; } } }), 'copied');
   assert.equal(copied, payload.url);
   assert.equal(await shareProduct(product, 'https://achadosdoethan.com.br/', {}), payload.url);

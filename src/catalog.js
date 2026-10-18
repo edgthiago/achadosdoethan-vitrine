@@ -1,5 +1,5 @@
 export const categories = ['Todos', 'Novos', 'Casa', 'Fitness', 'Tecnologia', 'Moda', 'Beleza', 'Pets'];
-export const featuredProductId = 'kit-leggings';
+export const featuredProductId = 'kit-fitness-camiseta-feminino';
 export const normalize = (value) => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 
 export function matchesProduct(product, category = 'Todos', query = '') {

@@ -1,23 +1,35 @@
-# Vitrine Achados do Ethan
+# Achados do Ethan — React + Vite
 
-Site estático com seis produtos e links de afiliado.
+Vitrine de afiliados em React, publicada como arquivos estáticos no Worker existente `achadosdoethan-vitrine` e no domínio `achadosdoethan.com.br`.
 
-## Cloudflare
+## Desenvolvimento
 
-Conecte este repositório ao novo Worker `achadosdoethan-vitrine`.
+Requer Node.js 22.12 ou superior.
 
-- Nome do projeto: `achadosdoethan-vitrine`
-- Branch de produção: `main`
-- Diretório raiz: `/`
-- Comando de build: deixar vazio
-- Comando de deploy: `npx wrangler deploy`
-- Preview builds: pode deixar desativado durante a configuração inicial
-- Cloudflare Access: desativado para acesso público à vitrine
+```sh
+npm ci
+npm run dev
+```
 
-O nome do projeto deve corresponder ao nome em `wrangler.json`. Confira o primeiro deploy e a URL exibida pela Cloudflare antes de substituir o link do Instagram.
+- `src/data/products.json`: catálogo, imagens, preços informados e links de afiliado.
+- `src/App.jsx`: componentes da vitrine, destaque, produtos e cupom.
+- `src/catalog.js`: busca, filtros, URLs e compartilhamento.
+- `src/styles.css`: identidade visual e enquadramento do destaque.
+- `public/assets/`: imagens existentes, preservadas na migração.
+- `index.html`: metadados do site e da prévia de compartilhamento.
 
-## Atualizações
+## Verificar e publicar
 
-Os arquivos públicos ficam em `public/`. Atualizações da branch de produção disparam a publicação quando a conexão Git estiver ativa. Valide o fluxo com uma atualização e a leitura da página publicada.
+```sh
+npm run build
+npm test
+npm run deploy
+```
 
-Não inclua senhas ou tokens no repositório. Preserve os links de afiliado e use somente informações confirmadas.
+O build gera `dist/` e pré-renderiza o catálogo no HTML. O React hidrata a página no navegador; não há necessidade de servidor de renderização ou banco de dados.
+
+O `wrangler.json` mantém o nome do Worker e o endereço workers.dev. Seu comando de build é executado automaticamente por `wrangler deploy`, portanto a integração existente pode continuar usando `npx wrangler deploy`. Não incluir tokens no repositório.
+
+Para envio manual pelo painel da Cloudflare, envie **todo o conteúdo de `dist/`**, incluindo `index.html`, `favicon.svg` e `assets/`. Não envie a pasta de código-fonte nem somente o HTML. Confirme o domínio público após a implantação.
+
+Os preços e condições permanecem associados às datas originais de consulta. Atualize-os somente após conferir o anúncio e preserve os links de afiliado. O destaque é definido por `featuredProductId` em `src/catalog.js`; o produto também deve aparecer no início do catálogo.

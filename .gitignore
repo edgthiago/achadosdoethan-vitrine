@@ -1,5 +1,9 @@
 node_modules/
+dist/
+.ssr/
 .wrangler/
 .env
 .env.*
-.dev.vars*
+original.html
+qa/
+asset-manifest.json

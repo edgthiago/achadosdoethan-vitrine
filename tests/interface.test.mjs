@@ -27,7 +27,7 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   const { dom, document, errors } = await open();
   try {
     assert.equal(document.querySelectorAll('article.card').length, products.length);
-    assert.equal(document.querySelector('.hero-visual').getAttribute('href'), '#kit-leggings');
+    assert.equal(document.querySelector('.hero-visual').getAttribute('href'), '#kit-fitness-camiseta-feminino');
     assert.equal(document.querySelector('#kit-leggings .cta').href, 'https://meli.la/2zMoZpF');
     document.querySelector('[data-filter="Casa"]').click();
     await settle();
@@ -36,7 +36,7 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
     document.querySelector('.hero-visual').click();
     await settle();
     assert.equal(document.querySelectorAll('article.card').length, products.length);
-    assert.equal(dom.scrolledTo, 'kit-leggings');
+    assert.equal(dom.scrolledTo, 'kit-fitness-camiseta-feminino');
     assert.deepEqual(errors, []);
   } finally { dom.window.close(); }
 });

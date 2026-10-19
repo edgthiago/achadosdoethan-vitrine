@@ -58,7 +58,7 @@ test('pesquisa sem resultado permite limpar filtros e voltar ao catálogo', asyn
   } finally { dom.window.close(); }
 });
 
-test('restaura links filtrados e links diretos, copia produto e cupom', async () => {
+test('restaura links filtrados e links diretos e mantém cupom funcional', async () => {
   const { dom, window, document, errors } = await open('https://achadosdoethan.com.br/?q=cal%C3%A7a&categoria=Moda');
   try {
     assert.ok(document.querySelector('#jeans'));
@@ -68,11 +68,10 @@ test('restaura links filtrados e links diretos, copia produto e cupom', async ()
     await settle();
     assert.ok(document.querySelector('#kit-leggings'));
     assert.equal(document.querySelector('#search').value, '');
+    assert.equal(document.querySelector('#kit-leggings .product-title-link').href, 'https://achadosdoethan.com.br/produto/kit-leggings/');
+    assert.equal(document.querySelector('#kit-leggings .share-product'), null);
     let copied;
     Object.defineProperty(window.navigator, 'clipboard', { value: { writeText: async value => { copied = value; } }, configurable: true });
-    document.querySelector('#kit-leggings .share-product').click();
-    await settle();
-    assert.equal(copied, 'https://achadosdoethan.com.br/produto/kit-leggings/');
     document.querySelector('#copy-coupon').click();
     await settle();
     assert.equal(copied, 'POUPAMAIS');

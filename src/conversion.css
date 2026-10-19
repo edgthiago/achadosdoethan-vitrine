@@ -1,117 +1,309 @@
-/* Ajustes de conversão: reduzem rolagem e deixam compra como ação principal. */
+/* UX de conversão: uma única camada final para catálogo e controles responsivos. */
+.header-catalog-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  border: 1px solid #cbd0d8;
+  border-radius: 24px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.product-image-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.product-image-link img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.catalog-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+.saved-filter,
+.filter-panel > summary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd0d8;
+  border-radius: 22px;
+  background: #fff;
+  color: var(--navy);
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.saved-filter[aria-pressed="true"] {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
+}
+.filter-panel {
+  position: relative;
+  border: 0;
+  padding: 0;
+}
+.filter-panel > summary {
+  list-style: none;
+  font-weight: 700;
+}
+.filter-panel > summary::-webkit-details-marker { display: none; }
+.filter-panel > summary::after {
+  content: "▾";
+  margin-left: 7px;
+  font-size: 11px;
+}
+.filter-panel[open] > summary::after { content: "▴"; }
+.filter-panel-body {
+  position: absolute;
+  z-index: 15;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(420px, calc(100vw - 32px));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #d7dce3;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(16, 30, 56, .14);
+}
+.filter-panel-body label {
+  display: grid;
+  gap: 6px;
+  color: var(--navy);
+  font-size: 12px;
+  font-weight: 700;
+}
+.filter-panel-body select {
+  min-height: 44px;
+  width: 100%;
+  border: 1px solid #cbd0d8;
+  border-radius: 11px;
+  background: #fff;
+  color: var(--navy);
+  padding: 8px 10px;
+}
+
+/* Catálogo: compra como ação principal; detalhes completos ficam na página do produto. */
+.grid:not(.product-detail) .card .tag {
+  background: rgba(16, 30, 56, .68);
+  color: #fff;
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.grid:not(.product-detail) .card .favorite {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: var(--navy);
+}
+.grid:not(.product-detail) .card .favorite::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  z-index: -1;
+  border: 1px solid rgba(16, 30, 56, .12);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .64);
+  box-shadow: 0 2px 7px rgba(16, 30, 56, .08);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+.grid:not(.product-detail) .card .cta {
+  min-height: 44px;
+}
+
+@media (max-width: 1024px) {
+  .grid:not(.product-detail) .card .visual,
+  .grid:not(.product-detail) .card .fitness-visual {
+    position: relative;
+    display: block;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: #fff;
+  }
+  .grid:not(.product-detail) .card .visual img,
+  .grid:not(.product-detail) .card .fitness-visual img {
+    display: block;
+    width: 100%;
+    height: 100% !important;
+    min-width: 0;
+    object-fit: contain;
+    padding: 4px;
+  }
+  .grid:not(.product-detail) .card .tag {
+    position: absolute !important;
+    top: 7px;
+    left: 7px;
+    max-width: calc(100% - 58px);
+    margin: 0;
+    padding: 3px 6px;
+    border-radius: 7px;
+    font-size: 9px;
+    line-height: 1.2;
+  }
+  .grid:not(.product-detail) .card .favorite {
+    position: absolute !important;
+    z-index: 3;
+    top: 3px;
+    right: 3px;
+    display: grid;
+    place-items: center;
+    width: 44px !important;
+    min-width: 44px;
+    height: 44px !important;
+    min-height: 44px;
+    padding: 0;
+    font-size: 20px;
+  }
+}
+
 @media (max-width: 650px) {
+  .wrap { width: calc(100% - 24px); }
+  header {
+    padding: 12px 0;
+    gap: 10px;
+  }
+  .brand {
+    gap: 8px;
+    font-size: 17px;
+  }
+  .brand .mark {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+  .header-catalog-link {
+    min-height: 40px;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
   .instagram-picks {
-    padding: 12px;
-    margin: 6px 0 10px;
+    margin: 2px 0 8px;
+    padding: 10px;
+    border-radius: 18px;
   }
   .instagram-picks > div:first-child .eyebrow {
-    margin-bottom: 4px;
+    margin: 0 0 2px;
+    font-size: 8.5px;
+    letter-spacing: .12em;
   }
   .instagram-picks > div:first-child h2 {
-    font-size: 22px;
-    margin-bottom: 6px;
-  }
-  .instagram-picks > div:first-child > p:last-child {
-    display: none;
+    margin: 0 0 6px;
+    font-size: 20px;
   }
   .instagram-picks .instagram-list {
     display: flex;
     gap: 7px;
     overflow-x: auto;
-    padding: 1px 1px 3px;
+    padding: 1px 1px 2px;
     scroll-snap-type: x proximity;
     scrollbar-width: none;
   }
-  .instagram-picks .instagram-list::-webkit-scrollbar {
-    display: none;
-  }
+  .instagram-picks .instagram-list::-webkit-scrollbar { display: none; }
   .instagram-picks .instagram-list > a {
-    flex: 0 0 64%;
+    flex: 0 0 61%;
     min-width: 0;
     padding: 6px;
     scroll-snap-align: start;
   }
   .instagram-picks .instagram-list img {
-    width: 46px;
-    height: 50px;
+    width: 44px;
+    height: 48px;
   }
   .instagram-picks .instagram-list strong {
-    font-size: 11px;
-    line-height: 1.22;
+    font-size: 10.5px;
+    line-height: 1.2;
   }
   .instagram-picks .instagram-list small {
-    font-size: 10px;
+    font-size: 9px;
   }
 
-  .affiliate-note {
-    margin-top: 6px;
-    font-size: 9.5px;
-    line-height: 1.3;
-  }
   .intro-row {
-    margin: 9px 0 7px;
-    align-items: baseline;
+    margin: 8px 0 7px;
+    align-items: center;
   }
   .intro-row h2 {
     font-size: 21px;
+    line-height: 1.1;
   }
-  .intro-row p {
-    display: none;
+  .affiliate-note {
+    margin: 4px 0 0;
+    max-width: 260px;
+    font-size: 9px;
+    line-height: 1.25;
   }
   .intro-row .count {
     padding: 0;
     border: 0;
     background: transparent;
-    font-size: 10px;
     color: #6f7785;
+    font-size: 10px;
   }
-  .search-label {
-    display: none;
-  }
+
   .search {
+    min-height: 44px;
     padding: 9px 12px;
-    min-height: 40px;
-  }
-  .saved-toolbar {
-    margin: 6px 0;
-  }
-  .saved-toolbar > span {
-    display: none !important;
-  }
-  .saved-filter {
-    min-height: 34px;
-    padding: 6px 10px;
-    font-size: 11px;
+    border-radius: 12px;
+    font-size: 14px;
   }
   .filters {
-    margin: 5px 0 7px;
-    padding: 1px 0 3px;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 7px;
+    overflow-x: auto;
+    margin: 7px 0 7px;
+    padding: 1px 0 2px;
     scrollbar-width: none;
   }
-  .filters::-webkit-scrollbar {
-    display: none;
-  }
+  .filters::-webkit-scrollbar { display: none; }
   .filters button {
-    min-height: 34px;
-    padding: 6px 10px;
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 7px 12px;
     font-size: 11px;
   }
-  .catalog-selects {
-    gap: 6px;
-    margin-bottom: 6px;
+  .catalog-actions {
+    margin: 0 0 8px;
+    gap: 7px;
   }
-  .catalog-selects label {
-    font-size: 10px;
-  }
-  .catalog-selects select {
-    min-height: 38px;
-    padding: 7px 9px;
+  .saved-filter,
+  .filter-panel > summary {
+    min-height: 44px;
+    padding: 7px 11px;
     font-size: 11px;
   }
+  .filter-panel-body {
+    width: min(330px, calc(100vw - 24px));
+    grid-template-columns: 1fr;
+    gap: 9px;
+    padding: 12px;
+  }
+  .filter-panel-body label { font-size: 11px; }
+  .filter-panel-body select { font-size: 12px; }
+
   .catalog-toolbar {
-    margin: 0 0 5px;
+    margin: 0 0 6px;
   }
-  .catalog-toolbar p {
+  .catalog-toolbar p,
+  .catalog-toolbar button {
     font-size: 10px;
   }
 
@@ -120,176 +312,61 @@
     gap: 8px;
   }
   .grid:not(.product-detail) .card {
-    position: relative;
     min-width: 0;
-    border-radius: 15px;
-  }
-  .grid:not(.product-detail) .card .visual,
-  .grid:not(.product-detail) .card .fitness-visual {
-    height: 185px !important;
-    min-height: 0 !important;
-    aspect-ratio: auto;
-  }
-  .grid:not(.product-detail) .card .visual img,
-  .grid:not(.product-detail) .card .fitness-visual img {
-    padding: 4px;
-  }
-  .grid:not(.product-detail) .card .tag {
-    top: 7px;
-    left: 7px;
-    padding: 3px 7px;
-    font-size: 9px;
-  }
-  .grid:not(.product-detail) .card .favorite {
-    top: 7px;
-    right: 7px;
-    width: 36px;
-    height: 36px;
-    font-size: 23px;
+    border-radius: 14px;
   }
   .grid:not(.product-detail) .card .copy {
     min-width: 0;
-    padding: 9px;
+    padding: 8px;
   }
   .grid:not(.product-detail) .card .card-category {
-    margin-bottom: 3px;
-    font-size: 8.5px;
+    margin-bottom: 2px;
+    font-size: 8px;
     letter-spacing: .08em;
   }
   .grid:not(.product-detail) .card .copy h3 {
     display: -webkit-box;
     overflow: hidden;
-    min-height: 2.65em;
+    min-height: 2.58em;
     margin: 0 0 5px;
-    font-size: 13.5px;
-    line-height: 1.32;
+    font-size: 12.8px;
+    line-height: 1.29;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
   }
   .grid:not(.product-detail) .card .price-row {
     min-height: 0;
-    margin-bottom: 4px;
+    margin: 0 0 6px;
     gap: 4px;
     flex-wrap: wrap;
+    justify-content: flex-start;
   }
   .grid:not(.product-detail) .card .price-row strong {
-    font-size: 19px;
+    font-size: 18.5px;
   }
   .grid:not(.product-detail) .card .price-row span {
     padding: 2px 5px;
-    font-size: 8.5px;
-  }
-  .grid:not(.product-detail) .card .price-note {
-    display: none !important;
-  }
-  .grid:not(.product-detail) .card .card-info {
-    margin: 0 0 6px;
-    padding: 4px 0;
-  }
-  .grid:not(.product-detail) .card .card-info summary {
-    min-height: 24px;
-    font-size: 0 !important;
-    line-height: 1.25;
-  }
-  .grid:not(.product-detail) .card .card-info summary::after {
-    content: "Detalhes";
-    font-size: 10.5px;
-    font-weight: 600;
-    color: var(--navy);
-  }
-  .grid:not(.product-detail) .card .card-actions {
-    position: static;
+    font-size: 8px;
   }
   .grid:not(.product-detail) .card .cta {
-    display: flex !important;
-    visibility: visible !important;
-    min-height: 40px;
-    padding: 6px 4px;
-    font-size: 10.5px;
-    line-height: 1.2;
+    min-height: 44px;
+    padding: 7px 4px;
     border-radius: 10px;
+    font-size: 10.5px;
+    line-height: 1.15;
   }
-  /* No catálogo, a compra e o favorito são as ações principais. Compartilhar fica na página do produto. */
-  .grid:not(.product-detail) .card .share-product {
-    display: none !important;
-  }
-  .grid:not(.product-detail) .card .micro {
-    display: none !important;
+
+  .coupon-card {
+    margin-top: 18px;
   }
 }
 
 @media (max-width: 370px) {
-  .grid:not(.product-detail) {
-    gap: 7px;
-  }
-  .grid:not(.product-detail) .card .visual,
-  .grid:not(.product-detail) .card .fitness-visual {
-    height: 170px !important;
-  }
-  .grid:not(.product-detail) .card .copy {
-    padding: 8px;
-  }
-  .grid:not(.product-detail) .card .copy h3 {
-    font-size: 12.5px;
-  }
-  .grid:not(.product-detail) .card .price-row strong {
-    font-size: 18px;
-  }
-  .grid:not(.product-detail) .card .favorite {
-    width: 34px;
-    height: 34px;
-  }
-}
-
-
-/* Keep catalog controls off product photos on phones and landscape/tablet widths. */
-@media (max-width: 1024px) {
-  .grid:not(.product-detail) .card .visual,
-  .grid:not(.product-detail) .card .fitness-visual {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 44px;
-    grid-template-rows: 44px auto;
-    height: auto !important;
-    min-height: 0 !important;
-    aspect-ratio: auto !important;
-    background: #fff;
-  }
-  .grid:not(.product-detail) .card .visual img,
-  .grid:not(.product-detail) .card .fitness-visual img {
-    grid-area: 2 / 1 / 3 / 3;
-    display: block;
-    width: 100%;
-    height: auto !important;
-    min-width: 0;
-    aspect-ratio: 1;
-    object-fit: contain;
-    padding: 4px;
-  }
-  .grid:not(.product-detail) .card .tag {
-    position: static !important;
-    grid-area: 1 / 1;
-    align-self: center;
-    justify-self: start;
-    max-width: calc(100% - 8px);
-    margin-left: 8px;
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-size: 9px;
-    line-height: 1.25;
-    overflow-wrap: anywhere;
-  }
-  .grid:not(.product-detail) .card .favorite {
-    position: static !important;
-    grid-area: 1 / 2;
-    align-self: center;
-    justify-self: end;
-    display: grid;
-    place-items: center;
-    width: 44px !important;
-    min-width: 44px;
-    height: 44px !important;
-    min-height: 44px;
-    padding: 0;
-    font-size: 23px;
-  }
+  .wrap { width: calc(100% - 18px); }
+  .grid:not(.product-detail) { gap: 6px; }
+  .grid:not(.product-detail) .card .copy { padding: 7px; }
+  .grid:not(.product-detail) .card .copy h3 { font-size: 12px; }
+  .grid:not(.product-detail) .card .price-row strong { font-size: 17px; }
+  .grid:not(.product-detail) .card .cta { font-size: 9.5px; }
+  .instagram-picks .instagram-list > a { flex-basis: 68%; }
 }

@@ -233,9 +233,10 @@ export default function App({ initialProductId = null }) {
         </section>
 
         <section id="produtos" aria-labelledby="products-title">
-          <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p className="affiliate-note">Links de afiliado · podemos receber comissão.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>
+          <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p className="affiliate-note">Achados selecionados para facilitar sua escolha.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>
           <label className="sr-only" htmlFor="search">Buscar produto</label>
           <input ref={searchRef} id="search" className="search" type="search" placeholder="Buscar leggings, casa, tecnologia…" value={query} onChange={event => setQuery(event.target.value)}/>
+          <p className="affiliate-note">Alguns links são de afiliado.</p>
 
           <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value}</button>)}</div>
 

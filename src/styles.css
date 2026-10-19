@@ -86,3 +86,34 @@
 
 .hero-visual.compact-feature{display:flex;width:fit-content;max-width:100%;margin:20px auto}.compact-feature>span{min-width:0}
 @media(max-width:650px){.hero-visual.compact-feature{width:100%;margin:18px auto}}
+
+/* Vitrine compacta: foco em navegação e compra no celular (out/2026) */
+@media(max-width:650px){
+  header{padding:10px 0}
+  .welcome{padding:7px 0 10px}
+  .welcome .eyebrow{margin-bottom:6px}
+  .welcome h1{font-size:27px;line-height:1.13;margin-bottom:7px}
+  .welcome>p:last-of-type{margin-bottom:10px}
+  .quick-search{margin-top:10px}
+  .instagram-picks{margin:12px 0;padding:12px}
+  .instagram-picks>div>p:last-child{margin:4px 0 10px}
+  .instagram-list{gap:6px}
+  .instagram-list>a{padding:6px 8px}
+  .instagram-list img{width:46px;height:48px}
+  .instagram-list strong{font-size:12px}
+  .instagram-list small{margin-top:2px}
+  .intro-row{margin:12px 0 10px}
+  .intro-row h2{font-size:22px}
+  .grid:not(.product-detail){gap:8px}
+  .grid:not(.product-detail) .card .copy{padding:9px}
+  .grid:not(.product-detail) .card h3{font-size:13px;min-height:3.4em;margin-bottom:6px}
+  .grid:not(.product-detail) .card .visual img{padding:5px}
+  .grid:not(.product-detail) .card .price-row{min-height:0;margin-bottom:5px}
+  .grid:not(.product-detail) .card .price-row strong{font-size:18px}
+  .grid:not(.product-detail) .card .price-note{font-size:9px!important;line-height:1.35;margin-bottom:8px!important}
+  .grid:not(.product-detail) .card .card-info{padding:6px 0;margin-bottom:8px}
+  .grid:not(.product-detail) .card .card-info summary{font-size:10px;line-height:1.35}
+  .grid:not(.product-detail) .card .cta{min-height:44px;padding:7px 4px;font-size:11px}
+  .grid:not(.product-detail) .card .share-product{min-height:36px;padding:5px 3px;font-size:10px}
+  .grid:not(.product-detail) .card .micro{font-size:9px;line-height:1.3}
+}

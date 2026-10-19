@@ -1,0 +1,231 @@
+/* Ajustes de conversão: reduzem rolagem e deixam compra como ação principal. */
+@media (max-width: 650px) {
+  .instagram-picks {
+    padding: 16px;
+    margin: 8px 0 14px;
+  }
+  .instagram-picks > div:first-child .eyebrow {
+    margin-bottom: 6px;
+  }
+  .instagram-picks > div:first-child h2 {
+    font-size: 26px;
+  }
+  .instagram-picks > div:first-child > p:last-child {
+    margin: 4px 0 10px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .instagram-picks .instagram-list {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 1px 1px 7px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .instagram-picks .instagram-list > a {
+    flex: 0 0 78%;
+    min-width: 0;
+    padding: 8px;
+    scroll-snap-align: start;
+  }
+  .instagram-picks .instagram-list img {
+    width: 54px;
+    height: 58px;
+  }
+  .instagram-picks .instagram-list strong {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .instagram-picks .instagram-list small {
+    font-size: 11px;
+  }
+
+  .affiliate-note {
+    margin-top: 10px;
+    font-size: 10px;
+  }
+  .intro-row {
+    margin: 14px 0 10px;
+    align-items: center;
+  }
+  .intro-row h2 {
+    font-size: 23px;
+  }
+  .intro-row p {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-top: 3px;
+  }
+  .search-label {
+    font-size: 12px;
+  }
+  .search {
+    padding: 11px 13px;
+    min-height: 44px;
+  }
+  .saved-toolbar {
+    margin-top: 8px;
+  }
+  .filters {
+    margin: 8px 0 10px;
+    padding-bottom: 5px;
+  }
+  .filters button {
+    min-height: 38px;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+  .catalog-selects {
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .catalog-selects label {
+    font-size: 11px;
+  }
+  .catalog-selects select {
+    min-height: 42px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .catalog-toolbar {
+    margin: 0 0 9px;
+  }
+
+  .grid:not(.product-detail) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .grid:not(.product-detail) .card {
+    position: relative;
+    border-radius: 16px;
+  }
+  .grid:not(.product-detail) .visual,
+  .grid:not(.product-detail) .fitness-visual {
+    height: 220px !important;
+    min-height: 0 !important;
+  }
+  .grid:not(.product-detail) .visual img,
+  .grid:not(.product-detail) .fitness-visual img {
+    padding: 4px;
+  }
+  .grid:not(.product-detail) .tag {
+    top: 8px;
+    left: 8px;
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  .grid:not(.product-detail) .favorite {
+    top: 8px;
+    right: 8px;
+    width: 40px;
+    height: 40px;
+  }
+  .grid:not(.product-detail) .copy {
+    padding: 11px;
+  }
+  .grid:not(.product-detail) .card-category {
+    margin-bottom: 5px;
+    font-size: 9px;
+    letter-spacing: .08em;
+  }
+  .grid:not(.product-detail) .copy h3 {
+    min-height: 2.7em;
+    margin: 0 0 6px;
+    font-size: 14px;
+    line-height: 1.35;
+  }
+  .grid:not(.product-detail) .price-row {
+    min-height: 0;
+    margin-bottom: 3px;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .grid:not(.product-detail) .price-row strong {
+    font-size: 20px;
+  }
+  .grid:not(.product-detail) .price-row span {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+  .grid:not(.product-detail) .price-note {
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 0 0 6px !important;
+    font-size: 9px !important;
+    line-height: 1.35;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .grid:not(.product-detail) .card-info {
+    margin: 0 0 7px;
+    padding: 6px 0;
+  }
+  .grid:not(.product-detail) .card-info summary {
+    font-size: 0;
+    line-height: 1.3;
+  }
+  .grid:not(.product-detail) .card-info summary::after {
+    content: "Detalhes";
+    font-size: 11px;
+  }
+  .grid:not(.product-detail) .card-actions {
+    position: static;
+  }
+  .grid:not(.product-detail) .cta {
+    min-height: 42px;
+    padding: 7px 5px;
+    font-size: 11px;
+    line-height: 1.25;
+    border-radius: 10px;
+  }
+  .grid:not(.product-detail) .share-product {
+    position: absolute;
+    z-index: 4;
+    top: 55px;
+    right: 8px;
+    width: 36px;
+    min-height: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #d7dce4;
+    border-radius: 50%;
+    background: rgba(255,255,255,.95);
+    color: var(--navy);
+    font-size: 0;
+    text-decoration: none;
+    box-shadow: 0 2px 8px #101e3814;
+  }
+  .grid:not(.product-detail) .share-product::before {
+    content: "↗";
+    font-size: 17px;
+    line-height: 1;
+  }
+  .grid:not(.product-detail) .share-product > span {
+    display: none;
+  }
+  .grid:not(.product-detail) .micro {
+    display: none;
+  }
+}
+
+@media (max-width: 370px) {
+  .grid:not(.product-detail) {
+    gap: 8px;
+  }
+  .grid:not(.product-detail) .visual,
+  .grid:not(.product-detail) .fitness-visual {
+    height: 200px !important;
+  }
+  .grid:not(.product-detail) .copy {
+    padding: 9px;
+  }
+  .grid:not(.product-detail) .copy h3 {
+    font-size: 13px;
+  }
+  .grid:not(.product-detail) .price-row strong {
+    font-size: 18px;
+  }
+}

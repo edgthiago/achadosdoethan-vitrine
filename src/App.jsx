@@ -245,6 +245,7 @@ export default function App({ initialProductId = null }) {
               <div className="filter-panel-body">
                 <label>Faixa de preço<select value={priceRange} onChange={e => setPriceRange(e.target.value)}><option value="all">Todos os preços</option><option value="under50">Menos de R$ 50</option><option value="from50to100">R$ 50 a menos de R$ 100</option><option value="from100to300">R$ 100 a menos de R$ 300</option><option value="over300">R$ 300 ou mais</option></select></label>
                 <label>Ordenar por<select value={order} onChange={e => setOrder(e.target.value)}><option value="featured">Destaques da vitrine</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label>
+                <button type="button" className="filter-panel-clear" disabled={!activeFilterCount} onClick={() => { setPriceRange('all'); setOrder('featured'); if (filterPanelRef.current) filterPanelRef.current.open = false; }}>Limpar filtros</button>
               </div>
             </details>
             <button type="button" className="saved-filter" aria-pressed={onlySaved} onClick={() => setOnlySaved(!onlySaved)}>♡ Favoritos{favorites.length ? ` (${favorites.length})` : ''}</button>

@@ -130,6 +130,30 @@ export default function App({ initialProductId = null }) {
   const searchRef = useRef(null);
   const timerRef = useRef(null);
   const frameRef = useRef(null);
+  const filterPanelRef = useRef(null);
+
+  useEffect(() => {
+    const panel = filterPanelRef.current;
+    if (!panel) return undefined;
+
+    function closeOnOutsidePress(event) {
+      if (panel.open && !panel.contains(event.target)) panel.open = false;
+    }
+
+    function closeOnEscape(event) {
+      if (event.key === 'Escape' && panel.open) {
+        panel.open = false;
+        panel.querySelector('summary')?.focus();
+      }
+    }
+
+    document.addEventListener('pointerdown', closeOnOutsidePress);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('pointerdown', closeOnOutsidePress);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, []);
 
   const scrollToProduct = useCallback(id => {
     cancelAnimationFrame(frameRef.current);
@@ -216,7 +240,7 @@ export default function App({ initialProductId = null }) {
           <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value}</button>)}</div>
 
           <div className="catalog-actions">
-            <details className="filter-panel">
+            <details ref={filterPanelRef} className="filter-panel">
               <summary>Filtros{activeFilterCount ? ` (${activeFilterCount})` : ''}</summary>
               <div className="filter-panel-body">
                 <label>Faixa de preço<select value={priceRange} onChange={e => setPriceRange(e.target.value)}><option value="all">Todos os preços</option><option value="under50">Menos de R$ 50</option><option value="from50to100">R$ 50 a menos de R$ 100</option><option value="from100to300">R$ 100 a menos de R$ 300</option><option value="over300">R$ 300 ou mais</option></select></label>

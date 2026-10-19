@@ -99,6 +99,23 @@
   color: var(--navy);
   padding: 8px 10px;
 }
+.filter-panel-clear {
+  grid-column: 1 / -1;
+  min-height: 40px;
+  width: 100%;
+  border: 1px solid #cbd0d8;
+  border-radius: 10px;
+  background: #f7f8fa;
+  color: var(--navy);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.filter-panel-clear:disabled {
+  opacity: .45;
+  cursor: default;
+}
 
 /* Catálogo: compra como ação principal; detalhes completos ficam na página do produto. */
 .grid:not(.product-detail) .card .tag {
@@ -307,6 +324,7 @@
   }
   .filter-panel-body label { font-size: 11px; }
   .filter-panel-body select { font-size: 12px; }
+  .filter-panel-clear { font-size: 11px; }
 
   .catalog-toolbar {
     margin: 0 0 6px;

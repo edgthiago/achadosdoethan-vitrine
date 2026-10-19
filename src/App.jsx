@@ -215,8 +215,8 @@ export default function App({ initialProductId = null }) {
         <section className="welcome"><p className="eyebrow">SUA VITRINE DE ACHADOS</p><h1>Seu próximo achado está aqui.</h1><p>Casa, moda e cuidados para a sua rotina.</p><form className="quick-search" onSubmit={e=>{e.preventDefault();document.getElementById('produtos')?.scrollIntoView({block:'start'});}}><label className="sr-only" htmlFor="top-search">O que você está procurando?</label><input id="top-search" type="search" placeholder="O que você está procurando?" value={query} onChange={e=>setQuery(e.target.value)}/><button type="submit">Buscar</button></form></section>
         
         <section className="instagram-picks" aria-labelledby="instagram-title">
-          <div><p className="eyebrow">DO PERFIL PARA A VITRINE</p><h2 id="instagram-title">Viu no Instagram?</h2><p>Encontre aqui os produtos que aparecem nos posts recentes.</p></div>
-          <div className="instagram-list">{['kit-fitness-camiseta-feminino', 'kit-leggings', 'jeans'].map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>Ver detalhes ↗</small></span></a>)}</div>
+          <div><p className="eyebrow">DO PERFIL PARA A VITRINE</p><h2 id="instagram-title">Viu no Instagram?</h2><p>Toque no produto para ver os detalhes e conferir a oferta atual.</p></div>
+          <div className="instagram-list">{['kit-fitness-camiseta-feminino', 'kit-leggings', 'jeans'].map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>{p.price} · Ver detalhes ↗</small></span></a>)}</div>
         </section>
         <section id="produtos" aria-labelledby="products-title">
           <p className="affiliate-note">Links de afiliado: podemos receber comissão por compras qualificadas.</p>

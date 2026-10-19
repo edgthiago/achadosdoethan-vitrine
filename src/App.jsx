@@ -95,7 +95,7 @@ function ShoppingGuide() {
 export default function App({ initialProductId = null }) {
   const [clock, setClock] = useState(null);
   const products = useMemo(() => catalog.map(p => ({ ...p, isNew: clock !== null && isRecent(p, clock) })), [clock]);
-  const recentBadgeIds = useMemo(() => new Set(products.filter(p => p.isNew).sort((a, b) => Date.parse(b.addedAt) - Date.parse(a.addedAt)).slice(0, 10).map(p => p.id)), [products]);
+  const recentBadgeIds = useMemo(() => new Set(products.filter(p => p.isNew).sort((a, b) => Date.parse(b.addedAt) - Date.parse(a.addedAt)).slice(0, 4).map(p => p.id)), [products]);
   const [favorites, setFavorites] = useState([]);
   const [onlySaved, setOnlySaved] = useState(false);
   const [collectionId, setCollectionId] = useState('');
@@ -201,7 +201,7 @@ export default function App({ initialProductId = null }) {
   return <>
     <a className="skip-link" href="#produtos">Ir para os produtos</a>
     <div className="wrap">
-      <header><Brand/><a className="header-catalog-link" href="#produtos">Ver achados ↓</a></header>
+      <header><Brand/></header>
       <main id="conteudo">
         <section className="instagram-picks" aria-labelledby="instagram-title">
           <div><h2 id="instagram-title">Viu no Instagram? Está aqui.</h2></div>
@@ -209,14 +209,13 @@ export default function App({ initialProductId = null }) {
         </section>
 
         <section id="produtos" aria-labelledby="products-title">
-          <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p className="affiliate-note">Links de afiliado: podemos receber comissão por compras qualificadas.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>
+          <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p className="affiliate-note">Links de afiliado · podemos receber comissão.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>
           <label className="sr-only" htmlFor="search">Buscar produto</label>
           <input ref={searchRef} id="search" className="search" type="search" placeholder="Buscar leggings, casa, tecnologia…" value={query} onChange={event => setQuery(event.target.value)}/>
 
           <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value}</button>)}</div>
 
           <div className="catalog-actions">
-            <button type="button" className="saved-filter" aria-pressed={onlySaved} onClick={() => setOnlySaved(!onlySaved)}>♡ Favoritos{favorites.length ? ` (${favorites.length})` : ''}</button>
             <details className="filter-panel">
               <summary>Filtros{activeFilterCount ? ` (${activeFilterCount})` : ''}</summary>
               <div className="filter-panel-body">
@@ -224,6 +223,7 @@ export default function App({ initialProductId = null }) {
                 <label>Ordenar por<select value={order} onChange={e => setOrder(e.target.value)}><option value="featured">Destaques da vitrine</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label>
               </div>
             </details>
+            <button type="button" className="saved-filter" aria-pressed={onlySaved} onClick={() => setOnlySaved(!onlySaved)}>♡ Favoritos{favorites.length ? ` (${favorites.length})` : ''}</button>
           </div>
 
           {hasActiveFilters && <div className="catalog-toolbar"><p id="result-text" aria-live="polite">{resultText || `${visibleProducts.length} produtos`}</p><button type="button" id="reset" onClick={reset}>Limpar filtros</button></div>}

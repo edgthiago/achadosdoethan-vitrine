@@ -204,7 +204,7 @@ export default function App({ initialProductId = null }) {
       <header><Brand/><a className="header-catalog-link" href="#produtos">Ver achados ↓</a></header>
       <main id="conteudo">
         <section className="instagram-picks" aria-labelledby="instagram-title">
-          <div><p className="eyebrow">DO PERFIL PARA A VITRINE</p><h2 id="instagram-title">Viu no Instagram?</h2></div>
+          <div><h2 id="instagram-title">Viu no Instagram? Está aqui.</h2></div>
           <div className="instagram-list">{instagramPickIds.map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>{p.price} · Ver detalhes ↗</small></span></a>)}</div>
         </section>
 

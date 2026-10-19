@@ -106,3 +106,60 @@ test('coleção compartilhada restaura seleção e categoria permite sair dela',
   assert.deepEqual(errors,[]);
  }finally{dom.window.close();}
 });
+
+test('painel de filtros fecha ao tocar fora e ao pressionar Escape', async () => {
+  const { dom, window, document, errors } = await open();
+  try {
+    const panel = document.querySelector('.filter-panel');
+    const summary = panel.querySelector('summary');
+
+    summary.click();
+    await settle();
+    assert.equal(panel.open, true);
+
+    document.querySelector('#search').dispatchEvent(new window.Event('pointerdown', { bubbles: true }));
+    await settle();
+    assert.equal(panel.open, false);
+
+    summary.click();
+    await settle();
+    assert.equal(panel.open, true);
+
+    document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await settle();
+    assert.equal(panel.open, false);
+    assert.deepEqual(errors, []);
+  } finally { dom.window.close(); }
+});
+
+test('painel permite limpar preço e ordenação sem apagar outros filtros', async () => {
+  const { dom, window, document, errors } = await open();
+  try {
+    const panel = document.querySelector('.filter-panel');
+    const selects = panel.querySelectorAll('select');
+    const selectSetter = Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set;
+
+    document.querySelector('[data-filter="Casa"]').click();
+    await settle();
+    panel.querySelector('summary').click();
+    await settle();
+
+    selectSetter.call(selects[0], 'under50');
+    selects[0].dispatchEvent(new window.Event('change', { bubbles: true }));
+    selectSetter.call(selects[1], 'price-desc');
+    selects[1].dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+
+    assert.match(panel.querySelector('summary').textContent, /Filtros \(2\)/);
+    assert.equal(document.querySelector('.filter-panel-clear').disabled, false);
+
+    document.querySelector('.filter-panel-clear').click();
+    await settle();
+
+    assert.equal(selects[0].value, 'all');
+    assert.equal(selects[1].value, 'featured');
+    assert.equal(panel.open, false);
+    assert.equal(document.querySelector('[data-filter="Casa"]').getAttribute('aria-pressed'), 'true');
+    assert.deepEqual(errors, []);
+  } finally { dom.window.close(); }
+});

@@ -67,10 +67,13 @@
 .filter-panel[open] > summary::after { content: "▴"; }
 .filter-panel-body {
   position: absolute;
-  z-index: 15;
+  z-index: 30;
   top: calc(100% + 8px);
-  right: 0;
+  left: 0;
+  right: auto;
   width: min(420px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
@@ -95,6 +98,23 @@
   background: #fff;
   color: var(--navy);
   padding: 8px 10px;
+}
+.filter-panel-clear {
+  grid-column: 1 / -1;
+  min-height: 40px;
+  width: 100%;
+  border: 1px solid #cbd0d8;
+  border-radius: 10px;
+  background: #f7f8fa;
+  color: var(--navy);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.filter-panel-clear:disabled {
+  opacity: .45;
+  cursor: default;
 }
 
 /* Catálogo: compra como ação principal; detalhes completos ficam na página do produto. */
@@ -214,7 +234,9 @@
     gap: 7px;
     overflow-x: auto;
     padding: 1px 1px 2px;
-    scroll-snap-type: x proximity;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1px;
+    overscroll-behavior-inline: contain;
     scrollbar-width: none;
   }
   .instagram-picks .instagram-list::-webkit-scrollbar { display: none; }
@@ -223,6 +245,7 @@
     min-width: 0;
     padding: 6px;
     scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
   .instagram-picks .instagram-list img {
     width: 44px;
@@ -291,13 +314,17 @@
     font-size: 11px;
   }
   .filter-panel-body {
+    left: 0;
+    right: auto;
     width: min(330px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
     grid-template-columns: 1fr;
     gap: 9px;
     padding: 12px;
   }
   .filter-panel-body label { font-size: 11px; }
   .filter-panel-body select { font-size: 12px; }
+  .filter-panel-clear { font-size: 11px; }
 
   .catalog-toolbar {
     margin: 0 0 6px;

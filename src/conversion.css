@@ -72,7 +72,7 @@
     margin: 7px 0;
   }
   .saved-toolbar > span {
-    display: none;
+    display: none !important;
   }
   .saved-filter {
     min-height: 40px;
@@ -111,11 +111,12 @@
   }
 
   .grid:not(.product-detail) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     gap: 10px;
   }
   .grid:not(.product-detail) .card {
     position: relative;
+    min-width: 0;
     border-radius: 16px;
   }
   .grid:not(.product-detail) .card .visual,
@@ -142,6 +143,7 @@
     font-size: 24px;
   }
   .grid:not(.product-detail) .card .copy {
+    min-width: 0;
     padding: 10px;
   }
   .grid:not(.product-detail) .card .card-category {
@@ -173,7 +175,7 @@
     font-size: 9px;
   }
   .grid:not(.product-detail) .card .price-note {
-    display: none;
+    display: none !important;
   }
   .grid:not(.product-detail) .card .card-info {
     margin: 0 0 7px;
@@ -194,6 +196,8 @@
     position: static;
   }
   .grid:not(.product-detail) .card .cta {
+    display: flex !important;
+    visibility: visible !important;
     min-height: 42px;
     padding: 7px 5px;
     font-size: 11px;
@@ -220,6 +224,7 @@
     color: var(--navy);
     font-size: 0 !important;
     line-height: 0 !important;
+    text-indent: -9999px;
     text-decoration: none;
     box-shadow: 0 2px 8px #101e3814;
   }
@@ -228,6 +233,7 @@
     display: block;
     font-size: 16px;
     line-height: 1;
+    text-indent: 0;
   }
   .grid:not(.product-detail) .card .share-product > span {
     display: none !important;

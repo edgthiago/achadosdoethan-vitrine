@@ -242,8 +242,8 @@
 }
 
 
-/* Final mobile card controls. This file is imported after styles.css. */
-@media (max-width: 650px) {
+/* Keep catalog controls off product photos on phones and landscape/tablet widths. */
+@media (max-width: 1024px) {
   .grid:not(.product-detail) .card .visual,
   .grid:not(.product-detail) .card .fitness-visual {
     display: grid;

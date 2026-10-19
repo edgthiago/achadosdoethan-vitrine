@@ -218,7 +218,6 @@ export default function App({ initialProductId = null }) {
           <div><p className="eyebrow">DO PERFIL PARA A VITRINE</p><h2 id="instagram-title">Viu no Instagram?</h2><p>Encontre aqui os produtos que aparecem nos posts recentes.</p></div>
           <div className="instagram-list">{['kit-fitness-camiseta-feminino', 'kit-leggings', 'jeans'].map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>Ver detalhes ↗</small></span></a>)}</div>
         </section>
-        <Hero onShowProduct={showProduct}/>
         <section id="produtos" aria-labelledby="products-title">
           <p className="affiliate-note">Links de afiliado: podemos receber comissão por compras qualificadas.</p>
           <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p>Preços vistos nas datas indicadas; confira o valor atualizado no anúncio antes de comprar.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>

@@ -27,16 +27,15 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   const { dom, document, errors } = await open();
   try {
     assert.equal(document.querySelectorAll('article.card').length, products.length);
-    assert.equal(document.querySelector('.hero-visual').getAttribute('href'), '#kit-fitness-camiseta-feminino');
+    assert.equal(document.querySelector('.instagram-list a').getAttribute('href'), 'https://achadosdoethan.com.br/produto/kit-fitness-camiseta-feminino/');
     assert.equal(document.querySelector('#kit-leggings .cta').href, 'https://meli.la/2zMoZpF');
     document.querySelector('[data-filter="Casa"]').click();
     await settle();
     assert.ok(document.querySelectorAll('article.card').length > 0);
     assert.ok([...document.querySelectorAll('article.card')].every(card => card.dataset.category === 'Casa'));
-    document.querySelector('.hero-visual').click();
+    document.querySelector('[data-filter="Todos"]').click();
     await settle();
     assert.equal(document.querySelectorAll('article.card').length, products.length);
-    assert.equal(dom.scrolledTo, 'kit-fitness-camiseta-feminino');
     assert.deepEqual(errors, []);
   } finally { dom.window.close(); }
 });

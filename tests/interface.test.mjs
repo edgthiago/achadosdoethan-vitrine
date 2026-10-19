@@ -106,3 +106,28 @@ test('coleção compartilhada restaura seleção e categoria permite sair dela',
   assert.deepEqual(errors,[]);
  }finally{dom.window.close();}
 });
+
+test('painel de filtros fecha ao tocar fora e ao pressionar Escape', async () => {
+  const { dom, window, document, errors } = await open();
+  try {
+    const panel = document.querySelector('.filter-panel');
+    const summary = panel.querySelector('summary');
+
+    summary.click();
+    await settle();
+    assert.equal(panel.open, true);
+
+    document.querySelector('#search').dispatchEvent(new window.Event('pointerdown', { bubbles: true }));
+    await settle();
+    assert.equal(panel.open, false);
+
+    summary.click();
+    await settle();
+    assert.equal(panel.open, true);
+
+    document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await settle();
+    assert.equal(panel.open, false);
+    assert.deepEqual(errors, []);
+  } finally { dom.window.close(); }
+});

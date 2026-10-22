@@ -1,8 +1,10 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { render } from '../.ssr/entry-server.js';
+import cascataLed from '../src/data/cascataLed.js';
 const root = new URL('../dist/', import.meta.url);
 const template = await readFile(new URL('index.html', root), 'utf8');
-const products = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url), 'utf8'));
+const catalogProducts = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url), 'utf8'));
+const products = catalogProducts.some(product => product.id === cascataLed.id) ? catalogProducts : [cascataLed, ...catalogProducts];
 if (!template.includes('<!--app-html-->')) throw new Error('Marcador de pré-renderização ausente.');
 await writeFile(new URL('index.html', root), template.replace('<!--app-html-->', render()));
 const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

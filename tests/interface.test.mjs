@@ -6,6 +6,7 @@ import { collections } from '../src/collections.js';
 
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
 const products = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url)));
+const expectedProductCount = products.length + 1;
 const scriptPath = html.match(/<script[^>]*src="([^"]+)"/)[1];
 const code = await readFile(new URL(`../dist${scriptPath}`, import.meta.url), 'utf8');
 const settle = () => new Promise(resolve => setTimeout(resolve, 60));
@@ -26,8 +27,8 @@ async function open(url = 'https://achadosdoethan.com.br/') {
 test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   const { dom, document, errors } = await open();
   try {
-    assert.equal(document.querySelectorAll('article.card').length, products.length);
-    assert.equal(document.querySelector('.instagram-list a').getAttribute('href'), 'https://achadosdoethan.com.br/produto/kit-fitness-camiseta-feminino/');
+    assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
+    assert.equal(document.querySelector('.instagram-list a').getAttribute('href'), 'https://achadosdoethan.com.br/produto/cascata-led-400-10m/');
     assert.equal(document.querySelector('#kit-leggings .cta').href, 'https://meli.la/2zMoZpF');
     document.querySelector('[data-filter="Casa"]').click();
     await settle();
@@ -35,7 +36,7 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
     assert.ok([...document.querySelectorAll('article.card')].every(card => card.dataset.category === 'Casa'));
     document.querySelector('[data-filter="Todos"]').click();
     await settle();
-    assert.equal(document.querySelectorAll('article.card').length, products.length);
+    assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
     assert.deepEqual(errors, []);
   } finally { dom.window.close(); }
 });
@@ -52,7 +53,7 @@ test('pesquisa sem resultado permite limpar filtros e voltar ao catálogo', asyn
     assert.ok(document.querySelector('#empty-reset'));
     document.querySelector('#empty-reset').click();
     await settle();
-    assert.equal(document.querySelectorAll('article.card').length, products.length);
+    assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
     assert.equal(document.activeElement.id, 'search');
     assert.deepEqual(errors, []);
   } finally { dom.window.close(); }
@@ -90,7 +91,7 @@ test('favoritos persistem, filtram e podem ser removidos sem cadastro', async ()
   assert.equal(document.querySelectorAll('article.card').length,0);
   assert.match(document.querySelector('#empty').textContent,/favoritos começam aqui/);
   document.querySelector('#empty-reset').click(); await settle();
-  assert.equal(document.querySelectorAll('article.card').length,products.length);
+  assert.equal(document.querySelectorAll('article.card').length,expectedProductCount);
   assert.deepEqual(errors,[]);
  } finally {dom.window.close();}
 });

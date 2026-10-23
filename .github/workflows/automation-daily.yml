@@ -1,6 +1,12 @@
 name: Achados do Ethan - Seleção diária
 
 on:
+  pull_request:
+    paths:
+      - 'scripts/automation/**'
+      - 'automation/**'
+      - 'src/data/products.json'
+      - '.github/workflows/automation-daily.yml'
   workflow_dispatch:
   schedule:
     # 13:00 UTC = 10:00 em Fortaleza (UTC-3)

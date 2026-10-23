@@ -25,22 +25,48 @@ if (!Array.isArray(selection.candidates) || selection.candidates.length === 0) {
 
 const systemPrompt = `Você é o agente de conteúdo do projeto Achados do Ethan, um perfil brasileiro de curadoria de ofertas com links de afiliado do Mercado Livre.
 
-Objetivo: escolher o produto com maior potencial de atenção, compartilhamento e clique entre os candidatos fornecidos e criar conteúdo orgânico para Instagram.
+Objetivo: escolher o produto com maior potencial de atenção, compartilhamento e clique entre os candidatos fornecidos e criar um pacote de conteúdo orgânico para Instagram com qualidade de social media profissional.
 
-Regras obrigatórias:
+REGRAS DE VERDADE:
 - escreva em português do Brasil;
-- não invente preço, desconto, avaliação, estoque, frete, cupom ou característica não fornecida;
-- trate preço e desconto como dados de referência que podem mudar e incentive a conferência no link;
+- use SOMENTE fatos presentes nos dados fornecidos;
+- não invente preço, desconto, avaliação, estoque, frete, cupom, material, tamanho, benefício ou característica;
+- preço e desconto são referência e podem mudar;
 - não prometa resultado do produto;
-- deixe claro quando houver link de afiliado/publicidade;
-- Reel com 15 a 20 segundos, abertura forte nos 3 primeiros segundos e texto curto na tela;
-- não crie textos que cubram o produto em uma edição visual;
-- CTA principal: conferir a oferta na vitrine/link e seguir @achadosdoethan;
-- Stories: exatamente 3 telas;
-- hashtags: entre 5 e 9, específicas e sem spam;
-- não use linguagem enganosa como 'corre que vai acabar' sem evidência.
+- não use urgência falsa, escassez falsa ou frases como "corre que vai acabar", "últimas unidades", "não perca" ou "oferta imperdível" sem evidência;
+- deixe claro que existe link de afiliado/publicidade.
 
-Retorne SOMENTE JSON válido, sem markdown, com esta estrutura:
+PADRÃO DE REEL:
+- duração EXATA de 18 segundos;
+- EXATAMENTE 6 cenas: 0-3, 3-6, 6-9, 9-12, 12-15 e 15-18;
+- os 3 primeiros segundos precisam ter um gancho específico baseado em preço, desconto, categoria ou selo real do produto;
+- cada texto na tela deve ser curto, preferencialmente até 7 palavras;
+- cada cena precisa ter visual, texto e voiceover diferentes;
+- não repetir a mesma frase em cenas consecutivas;
+- não sugerir texto cobrindo o produto;
+- cena final deve levar para a vitrine/link e pedir para seguir @achadosdoethan.
+
+PADRÃO DE LEGENDA:
+- 2 a 4 frases curtas;
+- mencionar preço/desconto somente se fornecidos;
+- incluir CTA para conferir na vitrine/link;
+- incluir @achadosdoethan;
+- sem clichês de urgência falsa.
+
+PADRÃO DE STORIES:
+- EXATAMENTE 3 telas;
+- tela 1: atenção;
+- tela 2: dado objetivo do produto/oferta;
+- tela 3: CTA para vitrine e seguir @achadosdoethan;
+- sem frases genéricas como "não perca essa oportunidade".
+
+HASHTAGS:
+- entre 6 e 8;
+- específicas para produto/categoria/curadoria;
+- sem erros gramaticais;
+- sem hashtags genéricas de spam.
+
+Retorne SOMENTE JSON válido, sem markdown, exatamente com esta estrutura:
 {
   "selectedProductId": "string",
   "selectionReason": "string curta",
@@ -48,12 +74,17 @@ Retorne SOMENTE JSON válido, sem markdown, com esta estrutura:
     "hook": "string",
     "durationSeconds": 18,
     "scenes": [
-      {"from": 0, "to": 3, "visual": "string", "text": "string", "voiceover": "string"}
+      {"from": 0, "to": 3, "visual": "string", "text": "string", "voiceover": "string"},
+      {"from": 3, "to": 6, "visual": "string", "text": "string", "voiceover": "string"},
+      {"from": 6, "to": 9, "visual": "string", "text": "string", "voiceover": "string"},
+      {"from": 9, "to": 12, "visual": "string", "text": "string", "voiceover": "string"},
+      {"from": 12, "to": 15, "visual": "string", "text": "string", "voiceover": "string"},
+      {"from": 15, "to": 18, "visual": "string", "text": "string", "voiceover": "string"}
     ],
     "endCta": "string"
   },
   "caption": "string",
-  "hashtags": ["#tag"],
+  "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6"],
   "stories": [
     {"frame": 1, "headline": "string", "support": "string", "cta": "string"},
     {"frame": 2, "headline": "string", "support": "string", "cta": "string"},
@@ -76,8 +107,8 @@ const response = await fetch(endpoint, {
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt },
     ],
-    max_tokens: 1800,
-    temperature: 0.45,
+    max_tokens: 2200,
+    temperature: 0.35,
   }),
 });
 
@@ -104,6 +135,32 @@ try {
 const selected = selection.candidates.find((item) => item.id === content.selectedProductId);
 if (!selected) {
   throw new Error(`A IA selecionou um produto desconhecido: ${content.selectedProductId}`);
+}
+
+const expectedScenes = [[0,3],[3,6],[6,9],[9,12],[12,15],[15,18]];
+if (content?.reel?.durationSeconds !== 18 || !Array.isArray(content?.reel?.scenes) || content.reel.scenes.length !== 6) {
+  throw new Error('Pacote inválido: o Reel precisa ter 18 segundos e exatamente 6 cenas.');
+}
+for (let i = 0; i < expectedScenes.length; i += 1) {
+  const scene = content.reel.scenes[i];
+  const [from, to] = expectedScenes[i];
+  if (scene?.from !== from || scene?.to !== to || !scene?.visual || !scene?.text || !scene?.voiceover) {
+    throw new Error(`Pacote inválido: cena ${i + 1} fora do padrão ${from}-${to}s.`);
+  }
+}
+if (!Array.isArray(content.hashtags) || content.hashtags.length < 6 || content.hashtags.length > 8) {
+  throw new Error('Pacote inválido: use entre 6 e 8 hashtags.');
+}
+if (!Array.isArray(content.stories) || content.stories.length !== 3) {
+  throw new Error('Pacote inválido: Stories precisa ter exatamente 3 telas.');
+}
+
+const forbidden = ['corre que vai acabar', 'últimas unidades', 'ultimas unidades', 'não perca', 'nao perca', 'oferta imperdível', 'oferta imperdivel'];
+const serialized = JSON.stringify(content).toLowerCase();
+for (const phrase of forbidden) {
+  if (serialized.includes(phrase)) {
+    throw new Error(`Pacote inválido: linguagem proibida detectada (${phrase}).`);
+  }
 }
 
 const result = {

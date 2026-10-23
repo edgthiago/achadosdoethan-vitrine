@@ -30,34 +30,38 @@ Objetivo: escolher o produto com maior potencial de atenção, compartilhamento 
 REGRAS DE VERDADE:
 - escreva em português do Brasil;
 - use SOMENTE fatos presentes nos dados fornecidos;
-- não invente preço, desconto, avaliação, estoque, frete, cupom, material, tamanho, benefício ou característica;
+- não invente preço, desconto, avaliação, estoque, frete, cupom, material, tamanho, benefício, desempenho, conforto, durabilidade, indicação de uso ou característica;
+- não transforme selo em interpretação: se houver "Mais vendido", diga apenas que há selo "Mais vendido"; não diga "escolha dos consumidores";
+- não inferir uso como "treino intenso", "ideal para", "perfeito para" ou similares;
 - preço e desconto são referência e podem mudar;
 - não prometa resultado do produto;
-- não use urgência falsa, escassez falsa ou frases como "corre que vai acabar", "últimas unidades", "não perca" ou "oferta imperdível" sem evidência;
+- não use urgência falsa, escassez falsa ou frases como "corre que vai acabar", "últimas unidades", "não perca", "oferta imperdível", "compre agora";
 - deixe claro que existe link de afiliado/publicidade.
 
 PADRÃO DE REEL:
 - duração EXATA de 18 segundos;
 - EXATAMENTE 6 cenas: 0-3, 3-6, 6-9, 9-12, 12-15 e 15-18;
-- os 3 primeiros segundos precisam ter um gancho específico baseado em preço, desconto, categoria ou selo real do produto;
+- os 3 primeiros segundos precisam ter um gancho específico baseado somente em preço, desconto, categoria, título ou selo real;
 - cada texto na tela deve ser curto, preferencialmente até 7 palavras;
 - cada cena precisa ter visual, texto e voiceover diferentes;
 - não repetir a mesma frase em cenas consecutivas;
+- visual deve usar apenas a imagem do produto fornecida, descrevendo enquadramento/zoom/texto; não inventar imagens adicionais;
 - não sugerir texto cobrindo o produto;
-- cena final deve levar para a vitrine/link e pedir para seguir @achadosdoethan.
+- CTA final deve dizer "Confira na vitrine" e incluir "@achadosdoethan";
+- não use "clique aqui".
 
 PADRÃO DE LEGENDA:
 - 2 a 4 frases curtas;
 - mencionar preço/desconto somente se fornecidos;
-- incluir CTA para conferir na vitrine/link;
-- incluir @achadosdoethan;
+- incluir literalmente "Confira na vitrine";
+- incluir literalmente "@achadosdoethan";
 - sem clichês de urgência falsa.
 
 PADRÃO DE STORIES:
 - EXATAMENTE 3 telas;
-- tela 1: atenção;
-- tela 2: dado objetivo do produto/oferta;
-- tela 3: CTA para vitrine e seguir @achadosdoethan;
+- tela 1: atenção usando título/categoria/desconto real;
+- tela 2: dado objetivo de preço/desconto/selo;
+- tela 3: CTA contendo literalmente "Confira na vitrine" e "@achadosdoethan";
 - sem frases genéricas como "não perca essa oportunidade".
 
 HASHTAGS:
@@ -81,14 +85,14 @@ Retorne SOMENTE JSON válido, sem markdown, exatamente com esta estrutura:
       {"from": 12, "to": 15, "visual": "string", "text": "string", "voiceover": "string"},
       {"from": 15, "to": 18, "visual": "string", "text": "string", "voiceover": "string"}
     ],
-    "endCta": "string"
+    "endCta": "Confira na vitrine e siga @achadosdoethan"
   },
   "caption": "string",
   "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6"],
   "stories": [
     {"frame": 1, "headline": "string", "support": "string", "cta": "string"},
     {"frame": 2, "headline": "string", "support": "string", "cta": "string"},
-    {"frame": 3, "headline": "string", "support": "string", "cta": "string"}
+    {"frame": 3, "headline": "string", "support": "string", "cta": "Confira na vitrine · @achadosdoethan"}
   ],
   "disclosure": "Publicidade / link de afiliado. Preço e disponibilidade podem mudar."
 }`;
@@ -108,7 +112,7 @@ const response = await fetch(endpoint, {
       { role: 'user', content: userPrompt },
     ],
     max_tokens: 2200,
-    temperature: 0.35,
+    temperature: 0.3,
   }),
 });
 
@@ -155,7 +159,24 @@ if (!Array.isArray(content.stories) || content.stories.length !== 3) {
   throw new Error('Pacote inválido: Stories precisa ter exatamente 3 telas.');
 }
 
-const forbidden = ['corre que vai acabar', 'últimas unidades', 'ultimas unidades', 'não perca', 'nao perca', 'oferta imperdível', 'oferta imperdivel'];
+const caption = String(content.caption || '').toLowerCase();
+const endCta = String(content?.reel?.endCta || '').toLowerCase();
+const story3 = JSON.stringify(content.stories[2] || {}).toLowerCase();
+if (!caption.includes('@achadosdoethan') || !caption.includes('confira na vitrine')) {
+  throw new Error('Pacote inválido: legenda precisa incluir Confira na vitrine e @achadosdoethan.');
+}
+if (!endCta.includes('@achadosdoethan') || !endCta.includes('confira na vitrine')) {
+  throw new Error('Pacote inválido: CTA final do Reel incompleto.');
+}
+if (!story3.includes('@achadosdoethan') || !story3.includes('confira na vitrine')) {
+  throw new Error('Pacote inválido: Story 3 precisa levar para a vitrine e @achadosdoethan.');
+}
+
+const forbidden = [
+  'corre que vai acabar', 'últimas unidades', 'ultimas unidades', 'não perca', 'nao perca',
+  'oferta imperdível', 'oferta imperdivel', 'compre agora', 'clique aqui', 'treinos intensos',
+  'treino intenso', 'escolha dos consumidores', 'ideal para', 'perfeito para'
+];
 const serialized = JSON.stringify(content).toLowerCase();
 for (const phrase of forbidden) {
   if (serialized.includes(phrase)) {

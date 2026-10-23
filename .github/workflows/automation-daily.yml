@@ -1,6 +1,14 @@
 name: Achados do Ethan - Automação diária
 
 on:
+  push:
+    branches:
+      - automation-v1
+    paths:
+      - 'scripts/automation/**'
+      - 'automation/**'
+      - 'src/data/products.json'
+      - '.github/workflows/automation-daily.yml'
   pull_request:
     paths:
       - 'scripts/automation/**'

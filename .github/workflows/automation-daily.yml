@@ -42,7 +42,7 @@ jobs:
         run: node scripts/automation/select-products.mjs
 
       - name: Gerar conteúdo com Workers AI
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
@@ -57,7 +57,7 @@ jobs:
           retention-days: 14
 
       - name: Salvar pacote de conteúdo
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/upload-artifact@v4
         with:
           name: pacote-conteudo-instagram

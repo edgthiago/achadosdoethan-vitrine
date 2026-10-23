@@ -47,21 +47,21 @@ PADRÃO DE REEL:
 - não repetir a mesma frase em cenas consecutivas;
 - visual deve usar apenas a imagem do produto fornecida, descrevendo enquadramento/zoom/texto; não inventar imagens adicionais;
 - não sugerir texto cobrindo o produto;
-- CTA final deve dizer "Confira na vitrine" e incluir "@achadosdoethan";
+- CTA final deve levar para a vitrine e pedir para seguir @achadosdoethan;
 - não use "clique aqui".
 
 PADRÃO DE LEGENDA:
 - 2 a 4 frases curtas;
 - mencionar preço/desconto somente se fornecidos;
-- incluir literalmente "Confira na vitrine";
-- incluir literalmente "@achadosdoethan";
+- incluir CTA para conferir na vitrine;
+- incluir @achadosdoethan;
 - sem clichês de urgência falsa.
 
 PADRÃO DE STORIES:
 - EXATAMENTE 3 telas;
 - tela 1: atenção usando título/categoria/desconto real;
 - tela 2: dado objetivo de preço/desconto/selo;
-- tela 3: CTA contendo literalmente "Confira na vitrine" e "@achadosdoethan";
+- tela 3: CTA para vitrine e seguir @achadosdoethan;
 - sem frases genéricas como "não perca essa oportunidade".
 
 HASHTAGS:
@@ -85,14 +85,14 @@ Retorne SOMENTE JSON válido, sem markdown, exatamente com esta estrutura:
       {"from": 12, "to": 15, "visual": "string", "text": "string", "voiceover": "string"},
       {"from": 15, "to": 18, "visual": "string", "text": "string", "voiceover": "string"}
     ],
-    "endCta": "Confira na vitrine e siga @achadosdoethan"
+    "endCta": "string"
   },
   "caption": "string",
   "hashtags": ["#tag1", "#tag2", "#tag3", "#tag4", "#tag5", "#tag6"],
   "stories": [
     {"frame": 1, "headline": "string", "support": "string", "cta": "string"},
     {"frame": 2, "headline": "string", "support": "string", "cta": "string"},
-    {"frame": 3, "headline": "string", "support": "string", "cta": "Confira na vitrine · @achadosdoethan"}
+    {"frame": 3, "headline": "string", "support": "string", "cta": "string"}
   ],
   "disclosure": "Publicidade / link de afiliado. Preço e disponibilidade podem mudar."
 }`;
@@ -159,30 +159,32 @@ if (!Array.isArray(content.stories) || content.stories.length !== 3) {
   throw new Error('Pacote inválido: Stories precisa ter exatamente 3 telas.');
 }
 
-const caption = String(content.caption || '').toLowerCase();
-const endCta = String(content?.reel?.endCta || '').toLowerCase();
-const story3 = JSON.stringify(content.stories[2] || {}).toLowerCase();
-if (!caption.includes('@achadosdoethan') || !caption.includes('confira na vitrine')) {
-  throw new Error('Pacote inválido: legenda precisa incluir Confira na vitrine e @achadosdoethan.');
-}
-if (!endCta.includes('@achadosdoethan') || !endCta.includes('confira na vitrine')) {
-  throw new Error('Pacote inválido: CTA final do Reel incompleto.');
-}
-if (!story3.includes('@achadosdoethan') || !story3.includes('confira na vitrine')) {
-  throw new Error('Pacote inválido: Story 3 precisa levar para a vitrine e @achadosdoethan.');
-}
-
 const forbidden = [
   'corre que vai acabar', 'últimas unidades', 'ultimas unidades', 'não perca', 'nao perca',
   'oferta imperdível', 'oferta imperdivel', 'compre agora', 'clique aqui', 'treinos intensos',
   'treino intenso', 'escolha dos consumidores', 'ideal para', 'perfeito para'
 ];
-const serialized = JSON.stringify(content).toLowerCase();
+const serializedBeforeNormalize = JSON.stringify(content).toLowerCase();
 for (const phrase of forbidden) {
-  if (serialized.includes(phrase)) {
+  if (serializedBeforeNormalize.includes(phrase)) {
     throw new Error(`Pacote inválido: linguagem proibida detectada (${phrase}).`);
   }
 }
+
+const requiredCta = 'Confira na vitrine e siga @achadosdoethan';
+const currentCaption = String(content.caption || '').trim().replace(/[.\s]+$/, '');
+const needsVitrine = !currentCaption.toLowerCase().includes('confira na vitrine');
+const needsHandle = !currentCaption.toLowerCase().includes('@achadosdoethan');
+const suffixParts = [];
+if (needsVitrine) suffixParts.push('Confira na vitrine');
+if (needsHandle) suffixParts.push('siga @achadosdoethan');
+content.caption = suffixParts.length > 0 ? `${currentCaption}. ${suffixParts.join(' e ')}.` : `${currentCaption}.`;
+content.reel.endCta = requiredCta;
+content.stories[2] = {
+  ...content.stories[2],
+  cta: 'Confira na vitrine · @achadosdoethan',
+};
+content.disclosure = 'Publicidade / link de afiliado. Preço e disponibilidade podem mudar.';
 
 const result = {
   generatedAt: new Date().toISOString(),

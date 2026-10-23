@@ -1,6 +1,14 @@
 name: Achados do Ethan - Automação diária
 
 on:
+  push:
+    branches:
+      - automation-v1
+    paths:
+      - 'scripts/automation/**'
+      - 'automation/**'
+      - 'src/data/products.json'
+      - '.github/workflows/automation-daily.yml'
   pull_request:
     paths:
       - 'scripts/automation/**'
@@ -41,6 +49,16 @@ jobs:
           CLOUDFLARE_AI_MODEL: '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
         run: node scripts/automation/generate-content.mjs
 
+      - name: Preparar renderizador de vídeo
+        if: github.event_name != 'pull_request'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Renderizar Reel 9:16
+        if: github.event_name != 'pull_request'
+        run: node scripts/automation/render-reel.mjs
+
       - name: Salvar resultado da seleção
         uses: actions/upload-artifact@v4
         with:
@@ -54,4 +72,12 @@ jobs:
         with:
           name: pacote-conteudo-instagram
           path: automation/output/content-package.json
+          retention-days: 14
+
+      - name: Salvar Reel renderizado
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: reel-instagram
+          path: automation/output/reel-instagram.mp4
           retention-days: 14

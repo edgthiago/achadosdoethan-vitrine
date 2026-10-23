@@ -1,22 +1,18 @@
-name: Achados do Ethan - Garimpo diário
+name: Achados do Ethan - Garimpo Mercado Livre
 
 on:
   pull_request:
     paths:
       - 'scripts/automation/**'
       - 'automation/**'
-      - 'src/data/products.json'
       - '.github/workflows/automation-daily.yml'
   workflow_dispatch:
-  schedule:
-    # 13:00 UTC = 10:00 em Fortaleza (UTC-3)
-    - cron: '0 13 * * *'
 
 permissions:
   contents: write
 
 jobs:
-  daily-garimpo:
+  validar-garimpo:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,7 +23,12 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Validar script de garimpo
+        if: github.event_name == 'pull_request'
+        run: node --check scripts/automation/garimpo-mercadolivre.mjs
+
       - name: Garimpar Mercado Livre
+        if: github.event_name == 'workflow_dispatch'
         env:
           MIN_POOL: '60'
           DAILY_LIMIT: '15'
@@ -36,11 +37,11 @@ jobs:
         run: node scripts/automation/garimpo-mercadolivre.mjs
 
       - name: Mostrar resumo do garimpo
-        if: always() && hashFiles('automation/output/garimpo-daily.md') != ''
+        if: github.event_name == 'workflow_dispatch' && success()
         run: cat automation/output/garimpo-daily.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Salvar lista diária
-        if: always() && hashFiles('automation/output/garimpo-daily.json') != ''
+        if: github.event_name == 'workflow_dispatch' && success()
         uses: actions/upload-artifact@v4
         with:
           name: garimpo-mercado-livre
@@ -51,7 +52,7 @@ jobs:
           retention-days: 14
 
       - name: Atualizar histórico de produtos selecionados
-        if: github.event_name != 'pull_request' && success()
+        if: github.event_name == 'workflow_dispatch' && success()
         run: |
           git config user.name "achadosdoethan-bot"
           git config user.email "actions@users.noreply.github.com"

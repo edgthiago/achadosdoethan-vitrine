@@ -1,4 +1,4 @@
-name: Achados do Ethan - Automação diária
+name: Achados do Ethan - Garimpo diário
 
 on:
   pull_request:
@@ -13,10 +13,10 @@ on:
     - cron: '0 13 * * *'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  daily-content:
+  daily-garimpo:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,49 +27,38 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Selecionar 3 produtos
+      - name: Garimpar Mercado Livre
         env:
-          MAX_CANDIDATES: '3'
-          MAX_PRICE: '80'
-        run: node scripts/automation/select-products.mjs
+          MIN_POOL: '60'
+          DAILY_LIMIT: '15'
+          SEARCH_LIMIT: '25'
+          MELI_ACCESS_TOKEN: ${{ secrets.MELI_ACCESS_TOKEN }}
+        run: node scripts/automation/garimpo-mercadolivre.mjs
 
-      - name: Gerar conteúdo com Workers AI
-        if: github.event_name != 'pull_request'
-        env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_AI_TOKEN: ${{ secrets.CLOUDFLARE_AI_TOKEN }}
-          CLOUDFLARE_AI_MODEL: '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
-        run: node scripts/automation/generate-content.mjs
+      - name: Mostrar resumo do garimpo
+        if: always() && hashFiles('automation/output/garimpo-daily.md') != ''
+        run: cat automation/output/garimpo-daily.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Preparar renderizador de vídeo
-        if: github.event_name != 'pull_request'
+      - name: Salvar lista diária
+        if: always() && hashFiles('automation/output/garimpo-daily.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: garimpo-mercado-livre
+          path: |
+            automation/output/garimpo-daily.json
+            automation/output/garimpo-daily.csv
+            automation/output/garimpo-daily.md
+          retention-days: 14
+
+      - name: Atualizar histórico de produtos selecionados
+        if: github.event_name != 'pull_request' && success()
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-dejavu-core
-
-      - name: Renderizar Reel 9:16
-        if: github.event_name != 'pull_request'
-        run: node scripts/automation/render-reel.mjs
-
-      - name: Salvar resultado da seleção
-        uses: actions/upload-artifact@v4
-        with:
-          name: produtos-selecionados
-          path: automation/output/candidates.json
-          retention-days: 14
-
-      - name: Salvar pacote de conteúdo
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: pacote-conteudo-instagram
-          path: automation/output/content-package.json
-          retention-days: 14
-
-      - name: Salvar Reel renderizado
-        if: github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: reel-instagram
-          path: automation/output/reel-instagram.mp4
-          retention-days: 14
+          git config user.name "achadosdoethan-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add automation/history/garimpo-history.json
+          if git diff --cached --quiet; then
+            echo "Histórico sem alterações."
+          else
+            git commit -m "chore: atualizar histórico do garimpo diário"
+            git push
+          fi

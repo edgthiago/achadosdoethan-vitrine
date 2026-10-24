@@ -6,7 +6,7 @@ import { collections } from '../src/collections.js';
 
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
 const products = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url)));
-const expectedProductCount = products.length + 2;
+const expectedProductCount = products.length + 3;
 const scriptPath = html.match(/<script[^>]*src="([^"]+)"/)[1];
 const code = await readFile(new URL(`../dist${scriptPath}`, import.meta.url), 'utf8');
 const settle = () => new Promise(resolve => setTimeout(resolve, 60));
@@ -29,6 +29,7 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   try {
     assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
     assert.equal(document.querySelector('.instagram-list a').getAttribute('href'), 'https://achadosdoethan.com.br/produto/bluetooth-v10-capacete/');
+    assert.equal(document.querySelector('#luminaria-galaxy-360 .cta').href, 'https://meli.la/121io6Y');
     assert.equal(document.querySelector('#bluetooth-v10-capacete .cta').href, 'https://meli.la/2P9VtPs');
     assert.equal(document.querySelector('#kit-leggings .cta').href, 'https://meli.la/2zMoZpF');
     document.querySelector('[data-filter="Casa"]').click();

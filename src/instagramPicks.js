@@ -8,8 +8,8 @@ if (!catalog.some(product => product.id === v10Bluetooth.id)) catalog.unshift(v1
 if (!catalog.some(product => product.id === galaxyLamp.id)) catalog.unshift(galaxyLamp);
 
 export const instagramPickIds = [
+  'luminaria-galaxy-360',
   'bluetooth-v10-capacete',
   'cascata-led-400-10m',
   'kit-fitness-camiseta-feminino',
-  'kit-leggings',
 ];

@@ -27,7 +27,15 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   const { dom, document, errors } = await open();
   try {
     assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
-    assert.equal(document.querySelector('.instagram-list a').getAttribute('href'), 'https://achadosdoethan.com.br/produto/tenis-kappa-park-2/');
+    const instagramLinks = [...document.querySelectorAll('.instagram-picks .instagram-list a')];
+    assert.deepEqual(instagramLinks.slice(0, 2).map(link => link.getAttribute('href')), [
+      'https://achadosdoethan.com.br/produto/balanca-bahrein-cozinha/',
+      'https://achadosdoethan.com.br/produto/alicate-dobravel-descascador-fios/',
+    ]);
+    assert.match(instagramLinks[0].textContent, /R\$ 13,00/);
+    assert.match(instagramLinks[1].textContent, /R\$ 22,00/);
+    assert.equal(document.querySelector('#balanca-bahrein-cozinha .cta').href, 'https://meli.la/2QxXJfC');
+    assert.equal(document.querySelector('#alicate-dobravel-descascador-fios .cta').href, 'https://meli.la/23WbJ2R');
     assert.equal(document.querySelector('#tenis-kappa-park-2 .cta').href, 'https://meli.la/1ujMeu9');
     assert.equal(document.querySelector('#luminaria-galaxy-360 .cta').href, 'https://meli.la/121io6Y');
     assert.equal(document.querySelector('#bluetooth-v10-capacete .cta').href, 'https://meli.la/2P9VtPs');

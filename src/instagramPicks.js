@@ -10,6 +10,8 @@ if (!catalog.some(product => product.id === galaxyLamp.id)) catalog.unshift(gala
 if (!catalog.some(product => product.id === kappaPark2.id)) catalog.unshift(kappaPark2);
 
 export const instagramPickIds = [
+  'balanca-bahrein-cozinha',
+  'alicate-dobravel-descascador-fios',
   'tenis-kappa-park-2',
   'luminaria-galaxy-360',
   'bluetooth-v10-capacete',

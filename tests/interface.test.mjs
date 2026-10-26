@@ -6,7 +6,7 @@ import { collections } from '../src/collections.js';
 
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
 const products = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url)));
-const expectedProductCount = products.length + 4;
+const expectedProductCount = products.length + 5;
 const scriptPath = html.match(/<script[^>]*src="([^"]+)"/)[1];
 const code = await readFile(new URL(`../dist${scriptPath}`, import.meta.url), 'utf8');
 const settle = () => new Promise(resolve => setTimeout(resolve, 60));
@@ -28,14 +28,15 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   try {
     assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
     const instagramLinks = [...document.querySelectorAll('.instagram-picks .instagram-list a')];
-    assert.deepEqual(instagramLinks.slice(0, 2).map(link => link.getAttribute('href')), [
-      'https://achadosdoethan.com.br/produto/balanca-bahrein-cozinha/',
-      'https://achadosdoethan.com.br/produto/alicate-dobravel-descascador-fios/',
-    ]);
-    assert.match(instagramLinks[0].textContent, /R\$ 13,00/);
-    assert.match(instagramLinks[1].textContent, /R\$ 22,00/);
+    assert.equal(instagramLinks[0].getAttribute('href'), 'https://achadosdoethan.com.br/produto/arvore-natal-dekasa-150-500/');
+    assert.match(instagramLinks[0].textContent, /R\$ 119,90/);
+    assert.ok(!instagramLinks.some(link => link.getAttribute('href')?.includes('balanca-bahrein-cozinha')));
+    assert.ok(!instagramLinks.some(link => link.getAttribute('href')?.includes('alicate-dobravel-descascador-fios')));
+    assert.equal(document.querySelector('#arvore-natal-dekasa-150-500 .cta').href, 'https://meli.la/2Dkx5XQ');
     assert.equal(document.querySelector('#balanca-bahrein-cozinha .cta').href, 'https://meli.la/2QxXJfC');
     assert.equal(document.querySelector('#alicate-dobravel-descascador-fios .cta').href, 'https://meli.la/23WbJ2R');
+    assert.equal(document.querySelector('#balanca-bahrein-cozinha .tag').textContent, 'Oferta');
+    assert.equal(document.querySelector('#alicate-dobravel-descascador-fios .tag').textContent, 'Achado útil');
     assert.equal(document.querySelector('#tenis-kappa-park-2 .cta').href, 'https://meli.la/1ujMeu9');
     assert.equal(document.querySelector('#luminaria-galaxy-360 .cta').href, 'https://meli.la/121io6Y');
     assert.equal(document.querySelector('#bluetooth-v10-capacete .cta').href, 'https://meli.la/2P9VtPs');

@@ -19,6 +19,7 @@ const alicate = catalog.find(product => product.id === 'alicate-dobravel-descasc
 if (alicate) alicate.badge = 'Achado útil';
 
 export const instagramPickIds = [
+  'kit-arvore-natal-120cm-enfeites',
   'pisca-pisca-zenx-100-led-9m',
   'arvore-natal-dekasa-150-500',
   'tenis-kappa-park-2',

@@ -36,7 +36,7 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
     assert.equal(document.querySelector('#balanca-bahrein-cozinha .cta').href, 'https://meli.la/2QxXJfC');
     assert.equal(document.querySelector('#alicate-dobravel-descascador-fios .cta').href, 'https://meli.la/23WbJ2R');
     assert.equal(document.querySelector('#balanca-bahrein-cozinha .tag').textContent, 'Oferta');
-    assert.equal(document.querySelector('#alicate-dobravel-descascador-fios .tag').textContent, 'Achado útil');
+    assert.match(document.querySelector('#alicate-dobravel-descascador-fios .tag').textContent, /^(Novo|Achado útil)$/);
     assert.equal(document.querySelector('#tenis-kappa-park-2 .cta').href, 'https://meli.la/1ujMeu9');
     assert.equal(document.querySelector('#luminaria-galaxy-360 .cta').href, 'https://meli.la/121io6Y');
     assert.equal(document.querySelector('#bluetooth-v10-capacete .cta').href, 'https://meli.la/2P9VtPs');

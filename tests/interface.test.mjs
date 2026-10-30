@@ -28,8 +28,10 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   try {
     assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
     const instagramLinks = [...document.querySelectorAll('.instagram-picks .instagram-list a')];
-    assert.equal(instagramLinks[0].getAttribute('href'), 'https://achadosdoethan.com.br/produto/escova-eletrica-deckcasa-jy6010/');
-    assert.match(instagramLinks[0].textContent, /R\$ 61,89/);
+    assert.equal(instagramLinks[0].getAttribute('href'), 'https://achadosdoethan.com.br/produto/kit-10-gorros-natal-dl/');
+    assert.match(instagramLinks[0].textContent, /R\$ 25,70/);
+    assert.equal(document.querySelector('#kit-10-gorros-natal-dl .cta').href, 'https://meli.la/1tSrh5R');
+    assert.ok(instagramLinks.some(link => link.getAttribute('href')?.includes('escova-eletrica-deckcasa-jy6010')));
     assert.ok(!instagramLinks.some(link => link.getAttribute('href')?.includes('balanca-bahrein-cozinha')));
     assert.ok(!instagramLinks.some(link => link.getAttribute('href')?.includes('alicate-dobravel-descascador-fios')));
     assert.equal(document.querySelector('#arvore-natal-dekasa-150-500 .cta').href, 'https://meli.la/2Dkx5XQ');

@@ -19,6 +19,7 @@ const alicate = catalog.find(product => product.id === 'alicate-dobravel-descasc
 if (alicate) alicate.badge = 'Achado útil';
 
 export const instagramPickIds = [
+  'kit-infantil-verao-10-pecas-reel',
   'toalha-mesa-6-lugares-joaninhas',
   'kit-10-gorros-natal-dl',
   'arvore-natal-nevada-120cm',

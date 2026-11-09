@@ -22,6 +22,12 @@
   width: 100%;
   height: 100%;
 }
+.marketplace-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.marketplace-filters button { min-height: 44px; border: 1px solid #cbd0d8; border-radius: 24px; padding: 8px 16px; background: #fff; color: var(--navy); font-weight: 700; cursor: pointer; }
+.marketplace-filters button[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
+.seller-label { font-weight: 700; color: #476078; }
+.compare-link { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; text-decoration: underline; }
+@media (max-width: 650px) { .marketplace-filters { gap: 6px; } .marketplace-filters button { flex: 1; min-width: 0; padding: 8px 5px; font-size: 11px; } }
 
 .catalog-actions {
   display: flex;

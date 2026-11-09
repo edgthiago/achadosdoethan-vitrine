@@ -50,7 +50,7 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
   const badge = showNewBadge ? 'Novo' : product.badge;
   const seller = product.marketplace === 'shopee' ? 'Shopee' : 'Mercado Livre';
 
-  return <article id={product.id} className={`card${showNewBadge ? ' new-card' : ''}`} data-category={product.category} data-new={product.isNew ? 'true' : undefined} data-search={product.search}>
+  return <article id={product.id} className={`card${showNewBadge ? ' new-card' : ''}`} data-category={product.category} data-marketplace={product.marketplace || 'mercado-livre'} data-new={product.isNew ? 'true' : undefined} data-search={product.search}>
     <div className={product.visualClass}>
       {detailed
         ? <img src={product.image.src} alt={product.image.alt} width={product.image.width} height={product.image.height} loading="lazy" decoding="async"/>

@@ -59,9 +59,9 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
       <button type="button" className="favorite" aria-label={`Salvar ${product.title}`} aria-pressed={saved} onClick={() => onFavorite(product.id)}>{saved ? '♥' : '♡'}</button>
     </div>
     <div className="copy">
-      <p className="card-category">{product.category} <span className="seller-label">· {seller}</span></p>
+      <p className="card-category">{product.category}</p>
       <h3><a className="product-title-link" href={detailUrl}>{product.title}</a></h3>
-      <div className="price-row"><strong>{product.price}</strong>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
+      <div className="price-row"><strong>{product.price}</strong><span className="seller-label">{seller}</span>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
       {detailed && <p className="price-note">{product.priceNote}</p>}
       {detailed && <details className="card-info" open>
         <summary>Detalhes e cuidados antes de comprar</summary>

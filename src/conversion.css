@@ -30,6 +30,9 @@
 .card[data-marketplace="shopee"] .cta { background: #c83720; color: #fff; }
 .card[data-marketplace="shopee"] .cta:hover { background: #a92d1a; }
 .marketplace-filters button[aria-pressed="true"]:last-child { background: #c83720; border-color: #c83720; }
+.instagram-more { display: block; margin: 14px auto 0; min-height: 44px; padding: 9px 18px; border: 1px solid #cbd0d8; border-radius: 24px; background: #fff; color: var(--navy); font-weight: 700; cursor: pointer; }
+.instagram-more:hover { border-color: var(--navy); }
+@media (min-width: 651px) { .instagram-picks:not(.expanded) .instagram-list > a:nth-child(n+7) { display: none; } }
 .compare-link { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; text-decoration: underline; }
 @media (max-width: 650px) { .marketplace-filters { gap: 6px; } .marketplace-filters button { flex: 1; min-width: 0; padding: 8px 5px; font-size: 11px; } }
 
@@ -205,6 +208,7 @@
 }
 
 @media (max-width: 650px) {
+  .instagram-more { display: none; }
   .wrap { width: calc(100% - 24px); }
   header {
     padding: 12px 0;

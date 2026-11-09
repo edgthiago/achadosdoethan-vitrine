@@ -28,8 +28,8 @@ function Coupon({ notify }) {
     <div className="coupon-copy">
       <span className="coupon-label">Cupom para Mercado Livre</span>
       <h2 id="coupon-title">25% OFF em produtos participantes</h2>
-      <p>Para produtos participantes do Mercado Livre pelo nosso link de afiliado. Confira a aplicação no carrinho.</p>
-      <details className="coupon-terms"><summary>Ver condições do cupom</summary><p>Compra mínima de R$ 1. Desconto máximo de R$ 500. Oferta válida enquanto durarem os estoques, conforme disponibilidade da campanha. O cupom não se aplica necessariamente a todos os produtos desta vitrine.</p></details>
+      <p>Para produtos participantes do Mercado Livre pelo nosso link de afiliado. Confira a disponibilidade e a aplicação no carrinho.</p>
+      <details className="coupon-terms"><summary>Ver condições do cupom</summary><p>Divulgado como válido até 25/11/2026, sujeito a encerramento antecipado. Compra mínima de R$ 1. Desconto máximo de R$ 500. A aplicação depende da sua conta e dos produtos participantes; confirme no carrinho.</p></details>
     </div>
     <div className="coupon-action"><span className="coupon-code">{coupon}</span><button type="button" id="copy-coupon" aria-label={`Copiar o cupom ${coupon}`} onClick={copyCoupon}>Copiar cupom</button></div>
   </section>;
@@ -96,6 +96,7 @@ function ShoppingGuide() {
 
 export default function App({ initialProductId = null }) {
   const [clock, setClock] = useState(null);
+  const [showAllInstagram, setShowAllInstagram] = useState(false);
   const products = useMemo(() => catalog.map(p => ({ ...p, isNew: clock !== null && isRecent(p, clock) })), [clock]);
   const recentBadgeIds = useMemo(() => new Set(products.filter(p => p.isNew).sort((a, b) => Date.parse(b.addedAt) - Date.parse(a.addedAt)).slice(0, 4).map(p => p.id)), [products]);
   const [favorites, setFavorites] = useState([]);
@@ -233,9 +234,10 @@ export default function App({ initialProductId = null }) {
     <div className="wrap">
       <header><Brand/></header>
       <main id="conteudo">
-        <section className="instagram-picks" aria-labelledby="instagram-title">
+        <section className={`instagram-picks${showAllInstagram ? ' expanded' : ''}`} aria-labelledby="instagram-title">
           <div><h2 id="instagram-title">Viu no Instagram? Está aqui.</h2></div>
-          <div className="instagram-list">{instagramPickIds.map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>{p.price} · Ver detalhes ↗</small></span></a>)}</div>
+          <div className="instagram-list">{instagramPickIds.map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>{p.price} · {p.marketplace === 'shopee' ? 'Shopee' : 'Mercado Livre'} · Ver detalhes ↗</small></span></a>)}</div>
+          {instagramPickIds.length > 6 && <button type="button" className="instagram-more" aria-expanded={showAllInstagram} onClick={() => setShowAllInstagram(value => !value)}>{showAllInstagram ? 'Mostrar menos' : `Ver todos os ${instagramPickIds.length} achados do Instagram`}</button>}
         </section>
 
         <section id="produtos" aria-labelledby="products-title">
@@ -265,7 +267,7 @@ export default function App({ initialProductId = null }) {
           {visibleProducts.length === 0 && <div className="empty" id="empty" role="status"><strong>{onlySaved && !favorites.length ? 'Seus favoritos começam aqui' : 'Nenhum achado encontrado'}</strong><p>{onlySaved && !favorites.length ? 'Toque no coração de um produto para salvar e encontrar depois.' : 'Tente outro nome ou limpe os filtros.'}</p><button type="button" id="empty-reset" onClick={reset}>Ver todos os achados</button></div>}
         </section>
 
-        {marketplace !== 'shopee' && <Coupon notify={notify}/>}
+        {marketplace !== 'shopee' && (!clock || clock < Date.parse('2026-11-26T00:00:00-03:00')) && <Coupon notify={notify}/>}
         <ShoppingGuide/>
       </main>
       <footer><div className="footrow"><strong>Achados do Ethan</strong><a href={instagram} target="_blank" rel="noopener noreferrer">@achadosdoethan ↗</a></div><p>Transparência: esta página contém links de afiliado do Mercado Livre e da Shopee. Não somos uma loja oficial dessas plataformas. Consulte todas as condições no anúncio antes de comprar.</p><span>© 2026 Achados do Ethan</span></footer>

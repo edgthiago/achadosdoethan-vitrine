@@ -26,9 +26,9 @@ function Coupon({ notify }) {
   }
   return <section className="coupon-card" aria-labelledby="coupon-title">
     <div className="coupon-copy">
-      <span className="coupon-label">Cupom da comunidade</span>
+      <span className="coupon-label">Cupom para Mercado Livre</span>
       <h2 id="coupon-title">25% OFF em produtos participantes</h2>
-      <p>Para compras pelo nosso link de afiliado. Confira a aplicação no carrinho.</p>
+      <p>Para produtos participantes do Mercado Livre pelo nosso link de afiliado. Confira a aplicação no carrinho.</p>
       <details className="coupon-terms"><summary>Ver condições do cupom</summary><p>Compra mínima de R$ 1. Desconto máximo de R$ 500. Oferta válida enquanto durarem os estoques, conforme disponibilidade da campanha. O cupom não se aplica necessariamente a todos os produtos desta vitrine.</p></details>
     </div>
     <div className="coupon-action"><span className="coupon-code">{coupon}</span><button type="button" id="copy-coupon" aria-label={`Copiar o cupom ${coupon}`} onClick={copyCoupon}>Copiar cupom</button></div>
@@ -48,6 +48,7 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
 
   const detailUrl = productUrl('https://achadosdoethan.com.br/', product.id);
   const badge = showNewBadge ? 'Novo' : product.badge;
+  const seller = product.marketplace === 'shopee' ? 'Shopee' : 'Mercado Livre';
 
   return <article id={product.id} className={`card${showNewBadge ? ' new-card' : ''}`} data-category={product.category} data-new={product.isNew ? 'true' : undefined} data-search={product.search}>
     <div className={product.visualClass}>
@@ -58,7 +59,7 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
       <button type="button" className="favorite" aria-label={`Salvar ${product.title}`} aria-pressed={saved} onClick={() => onFavorite(product.id)}>{saved ? '♥' : '♡'}</button>
     </div>
     <div className="copy">
-      <p className="card-category">{product.category}</p>
+      <p className="card-category">{product.category} <span className="seller-label">· {seller}</span></p>
       <h3><a className="product-title-link" href={detailUrl}>{product.title}</a></h3>
       <div className="price-row"><strong>{product.price}</strong>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
       {detailed && <p className="price-note">{product.priceNote}</p>}
@@ -69,7 +70,8 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
         {product.details && <p><strong>{product.details.summary}:</strong> {product.details.text}</p>}
       </details>}
       <div className="card-actions">
-        <a className="cta" href={product.url} target="_blank" rel="sponsored noopener noreferrer" aria-label={`Ver ${product.title} no Mercado Livre`}>Ver no Mercado Livre <span aria-hidden="true">↗</span></a>
+        <a className="cta" href={product.url} target="_blank" rel="sponsored noopener noreferrer" aria-label={`Ver ${product.title} na loja ${seller}`}>Ver na {seller} <span aria-hidden="true">↗</span></a>
+        {product.otherOffer && <a className="compare-link" href={product.otherOffer.url} target="_blank" rel="sponsored noopener noreferrer">Comparar no {product.otherOffer.marketplace} ↗</a>}
         {detailed && <button type="button" className="share-product" aria-label={`Compartilhar ${product.title}`} onClick={share}>Compartilhar produto <span aria-hidden="true">↗</span></button>}
         {detailed && <span className="micro">{product.disclosure}</span>}
       </div>
@@ -122,6 +124,7 @@ export default function App({ initialProductId = null }) {
   }
 
   const [category, setCategory] = useState('Todos');
+  const [marketplace, setMarketplace] = useState('todos');
   const [query, setQuery] = useState('');
   const [priceRange, setPriceRange] = useState('all');
   const [order, setOrder] = useState('featured');
@@ -166,6 +169,7 @@ export default function App({ initialProductId = null }) {
       const requestedCollection = new URL(window.location.href).searchParams.get('colecao');
       setCollectionId(!current.productId && collections.some(c => c.id === requestedCollection) ? requestedCollection : '');
       setCategory(current.category);
+      setMarketplace(current.marketplace);
       setQuery(current.query);
       if (current.productId) scrollToProduct(current.productId);
       setLocationReady(true);
@@ -185,9 +189,10 @@ export default function App({ initialProductId = null }) {
     if (locationReady && !initialProductId) {
       const url = new URL(catalogUrl(window.location.href, category, query));
       collectionId ? url.searchParams.set('colecao', collectionId) : url.searchParams.delete('colecao');
+      marketplace === 'todos' ? url.searchParams.delete('loja') : url.searchParams.set('loja', marketplace);
       window.history.replaceState(null, '', url);
     }
-  }, [category, query, locationReady, collectionId, initialProductId]);
+  }, [category, query, marketplace, locationReady, collectionId, initialProductId]);
 
   function notify(message) {
     setToast(message);
@@ -197,6 +202,7 @@ export default function App({ initialProductId = null }) {
 
   function reset() {
     setCategory('Todos');
+    setMarketplace('todos');
     setQuery('');
     setPriceRange('all');
     setOrder('featured');
@@ -205,10 +211,10 @@ export default function App({ initialProductId = null }) {
     searchRef.current?.focus();
   }
 
-  const visibleProducts = useMemo(() => selectProducts(products, category, query, priceRange, order).filter(p => (!collection || collection.ids.includes(p.id)) && (!onlySaved || favorites.includes(p.id))), [products, category, query, priceRange, order, collection, onlySaved, favorites]);
+  const visibleProducts = useMemo(() => selectProducts(products, category, query, priceRange, order).filter(p => (marketplace === 'todos' || (p.marketplace || 'mercado-livre') === marketplace) && (!collection || collection.ids.includes(p.id)) && (!onlySaved || favorites.includes(p.id))), [products, category, query, priceRange, order, marketplace, collection, onlySaved, favorites]);
   const resultText = onlySaved ? 'Seus favoritos' : collection ? collection.title : query.trim() ? `Resultados para “${query.trim()}”` : category === 'Novos' ? 'Adicionados recentemente' : category !== 'Todos' ? `Categoria: ${category}` : '';
   const activeFilterCount = (priceRange !== 'all' ? 1 : 0) + (order !== 'featured' ? 1 : 0);
-  const hasActiveFilters = category !== 'Todos' || query.trim() || priceRange !== 'all' || order !== 'featured' || collectionId || onlySaved;
+  const hasActiveFilters = marketplace !== 'todos' || category !== 'Todos' || query.trim() || priceRange !== 'all' || order !== 'featured' || collectionId || onlySaved;
 
   const selectedProduct = products.find(p => p.id === initialProductId);
   if (selectedProduct) return <div className="wrap">
@@ -238,6 +244,7 @@ export default function App({ initialProductId = null }) {
           <input ref={searchRef} id="search" className="search" type="search" placeholder="Buscar leggings, casa, tecnologia…" value={query} onChange={event => setQuery(event.target.value)}/>
           <p className="affiliate-note">Alguns links são de afiliado.</p>
 
+          <div className="marketplace-filters" aria-label="Filtrar por loja">{[['todos','Todos'],['mercado-livre','Mercado Livre'],['shopee','Shopee']].map(([value,label]) => <button key={value} type="button" aria-pressed={marketplace === value} onClick={() => setMarketplace(value)}>{label}</button>)}</div>
           <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value}</button>)}</div>
 
           <div className="catalog-actions">
@@ -258,10 +265,10 @@ export default function App({ initialProductId = null }) {
           {visibleProducts.length === 0 && <div className="empty" id="empty" role="status"><strong>{onlySaved && !favorites.length ? 'Seus favoritos começam aqui' : 'Nenhum achado encontrado'}</strong><p>{onlySaved && !favorites.length ? 'Toque no coração de um produto para salvar e encontrar depois.' : 'Tente outro nome ou limpe os filtros.'}</p><button type="button" id="empty-reset" onClick={reset}>Ver todos os achados</button></div>}
         </section>
 
-        <Coupon notify={notify}/>
+        {marketplace !== 'shopee' && <Coupon notify={notify}/>}
         <ShoppingGuide/>
       </main>
-      <footer><div className="footrow"><strong>Achados do Ethan</strong><a href={instagram} target="_blank" rel="noopener noreferrer">@achadosdoethan ↗</a></div><p>Transparência: esta página contém links de afiliado. Não somos uma loja oficial do Mercado Livre. Consulte todas as condições no anúncio antes de comprar.</p><span>© 2026 Achados do Ethan</span></footer>
+      <footer><div className="footrow"><strong>Achados do Ethan</strong><a href={instagram} target="_blank" rel="noopener noreferrer">@achadosdoethan ↗</a></div><p>Transparência: esta página contém links de afiliado do Mercado Livre e da Shopee. Não somos uma loja oficial dessas plataformas. Consulte todas as condições no anúncio antes de comprar.</p><span>© 2026 Achados do Ethan</span></footer>
     </div>
     <p className="toast" id="toast" role="status" hidden={!toast}>{toast}</p>
   </>;

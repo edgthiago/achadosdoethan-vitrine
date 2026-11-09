@@ -12,10 +12,11 @@ export function readCatalogLocation(href, products) {
   const url = new URL(href);
   const productId = url.hash.slice(1);
   if (products.some(product => product.id === productId)) {
-    return { category: 'Todos', query: '', productId };
+    return { category: 'Todos', query: '', marketplace: 'todos', productId };
   }
   const category = url.searchParams.get('categoria');
-  return { category: categories.includes(category) ? category : 'Todos', query: url.searchParams.get('q') || '', productId: null };
+  const marketplace = url.searchParams.get('loja');
+  return { category: categories.includes(category) ? category : 'Todos', query: url.searchParams.get('q') || '', marketplace: ['mercado-livre', 'shopee'].includes(marketplace) ? marketplace : 'todos', productId: null };
 }
 
 export function catalogUrl(href, category, query) {

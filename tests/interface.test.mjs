@@ -28,8 +28,14 @@ test('hidrata a vitrine e mantém o catálogo navegável', async () => {
   try {
     assert.equal(document.querySelectorAll('article.card').length, expectedProductCount);
     const instagramLinks = [...document.querySelectorAll('.instagram-picks .instagram-list a')];
-    assert.equal(instagramLinks[0].getAttribute('href'), 'https://achadosdoethan.com.br/produto/kit-10-gorros-natal-dl/');
-    assert.match(instagramLinks[0].textContent, /R\$ 25,70/);
+    assert.equal(instagramLinks[0].getAttribute('href'), 'https://achadosdoethan.com.br/produto/tapioqueira-polvilhador-panylup/');
+    assert.match(instagramLinks[0].textContent, /R\$ 27,19.*Mercado Livre/);
+    assert.equal(document.querySelector('.instagram-more').getAttribute('aria-expanded'), 'false');
+    document.querySelector('.instagram-more').click();
+    await settle();
+    assert.equal(document.querySelector('.instagram-more').getAttribute('aria-expanded'), 'true');
+    assert.ok(document.querySelector('.instagram-picks').classList.contains('expanded'));
+    assert.equal(document.querySelectorAll('.store-nav a').length, 2);
     assert.equal(document.querySelector('#kit-10-gorros-natal-dl .cta').href, 'https://meli.la/1tSrh5R');
     assert.ok(instagramLinks.some(link => link.getAttribute('href')?.includes('escova-eletrica-deckcasa-jy6010')));
     assert.ok(!instagramLinks.some(link => link.getAttribute('href')?.includes('balanca-bahrein-cozinha')));

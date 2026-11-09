@@ -232,7 +232,7 @@ export default function App({ initialProductId = null }) {
   return <>
     <a className="skip-link" href="#produtos">Ir para os produtos</a>
     <div className="wrap">
-      <header><Brand/></header>
+      <header><Brand/><nav className="store-nav" aria-label="Ir para loja"><a href="/?loja=mercado-livre#produtos">Mercado Livre</a><a href="/?loja=shopee#produtos">Shopee</a></nav></header>
       <main id="conteudo">
         <section className={`instagram-picks${showAllInstagram ? ' expanded' : ''}`} aria-labelledby="instagram-title">
           <div><h2 id="instagram-title">Viu no Instagram? Está aqui.</h2></div>

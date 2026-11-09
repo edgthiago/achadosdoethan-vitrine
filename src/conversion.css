@@ -25,8 +25,8 @@
 .marketplace-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
 .marketplace-filters button { min-height: 44px; border: 1px solid #cbd0d8; border-radius: 24px; padding: 8px 16px; background: #fff; color: var(--navy); font-weight: 700; cursor: pointer; }
 .marketplace-filters button[aria-pressed="true"] { background: var(--navy); color: #fff; border-color: var(--navy); }
-.seller-label { font-weight: 700; color: #476078; }
-.card[data-marketplace="shopee"] .seller-label { color: #b4321d; }
+.grid .card .price-row .seller-label { font-weight: 700; color: #334f69; background: #eaf0f5; white-space: nowrap; }
+.grid .card[data-marketplace="shopee"] .price-row .seller-label { color: #a92d1a; background: #fff0eb; }
 .card[data-marketplace="shopee"] .cta { background: #c83720; color: #fff; }
 .card[data-marketplace="shopee"] .cta:hover { background: #a92d1a; }
 .marketplace-filters button[aria-pressed="true"]:last-child { background: #c83720; border-color: #c83720; }

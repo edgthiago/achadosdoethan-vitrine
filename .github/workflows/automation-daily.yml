@@ -1,0 +1,65 @@
+name: Achados do Ethan - Garimpo Mercado Livre
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/automation/**'
+      - 'automation/**'
+      - '.github/workflows/automation-daily.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validar-garimpo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validar script de garimpo
+        if: github.event_name == 'pull_request'
+        run: node --check scripts/automation/garimpo-mercadolivre.mjs
+
+      - name: Garimpar Mercado Livre
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          MIN_POOL: '60'
+          DAILY_LIMIT: '15'
+          SEARCH_LIMIT: '25'
+          MELI_ACCESS_TOKEN: ${{ secrets.MELI_ACCESS_TOKEN }}
+        run: node scripts/automation/garimpo-mercadolivre.mjs
+
+      - name: Mostrar resumo do garimpo
+        if: github.event_name == 'workflow_dispatch' && success()
+        run: cat automation/output/garimpo-daily.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Salvar lista diária
+        if: github.event_name == 'workflow_dispatch' && success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: garimpo-mercado-livre
+          path: |
+            automation/output/garimpo-daily.json
+            automation/output/garimpo-daily.csv
+            automation/output/garimpo-daily.md
+          retention-days: 14
+
+      - name: Atualizar histórico de produtos selecionados
+        if: github.event_name == 'workflow_dispatch' && success()
+        run: |
+          git config user.name "achadosdoethan-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add automation/history/garimpo-history.json
+          if git diff --cached --quiet; then
+            echo "Histórico sem alterações."
+          else
+            git commit -m "chore: atualizar histórico do garimpo diário"
+            git push
+          fi

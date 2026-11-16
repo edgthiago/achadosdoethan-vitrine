@@ -1,35 +1,56 @@
-# Achados do Ethan — React + Vite
+# Achados do Ethan — Vitrine
 
-Vitrine de afiliados em React, publicada como arquivos estáticos no Worker existente `achadosdoethan-vitrine` e no domínio `achadosdoethan.com.br`.
+Vitrine React hospedada no Cloudflare Workers.
 
 ## Desenvolvimento
 
-Requer Node.js 22.12 ou superior.
-
-```sh
-npm ci
+```bash
+npm install
 npm run dev
 ```
 
-- `src/data/products.json`: catálogo, imagens, preços informados e links de afiliado.
-- `src/App.jsx`: componentes da vitrine, destaque, produtos e cupom.
-- `src/catalog.js`: busca, filtros, URLs e compartilhamento.
-- `src/styles.css`: identidade visual e enquadramento do destaque.
-- `public/assets/`: imagens existentes, preservadas na migração.
-- `index.html`: metadados do site e da prévia de compartilhamento.
+## Build e testes
 
-## Verificar e publicar
-
-```sh
-npm run build
+```bash
 npm test
+npm run build
+```
+
+## Deploy
+
+```bash
 npm run deploy
 ```
 
-O build gera `dist/` e pré-renderiza o catálogo no HTML. O React hidrata a página no navegador; não há necessidade de servidor de renderização ou banco de dados.
+## Automação diária de conteúdo
 
-O `wrangler.json` mantém o nome do Worker e o endereço workers.dev. Seu comando de build é executado automaticamente por `wrangler deploy`, portanto a integração existente pode continuar usando `npx wrangler deploy`. Não incluir tokens no repositório.
+A automação em `.github/workflows/automation-daily.yml` executa diariamente às 10:00 no horário de Fortaleza (13:00 UTC).
 
-Para envio manual pelo painel da Cloudflare, envie **todo o conteúdo de `dist/`**, incluindo `index.html`, `favicon.svg` e `assets/`. Não envie a pasta de código-fonte nem somente o HTML. Confirme o domínio público após a implantação.
+Fluxo:
 
-Os preços e condições permanecem associados às datas originais de consulta. Atualize-os somente após conferir o anúncio e preserve os links de afiliado. O destaque é definido por `featuredProductId` em `src/catalog.js`; o produto também deve aparecer no início do catálogo.
+1. lê `src/data/products.json`;
+2. filtra produtos com preço, foto e link;
+3. pontua ofertas, descontos, itens novos, mais vendidos e preços baixos;
+4. seleciona 3 candidatos;
+5. envia os candidatos ao Cloudflare Workers AI;
+6. a IA escolhe 1 produto principal e gera Reel, legenda, CTA, hashtags e 3 Stories;
+7. os resultados ficam disponíveis como artefatos do GitHub Actions por 14 dias.
+
+### Secrets necessários no GitHub
+
+Em **Settings → Secrets and variables → Actions**, crie estes Repository secrets:
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_AI_TOKEN`
+
+Nunca salve o token diretamente no código, em commits ou em arquivos do repositório.
+
+### Modelo padrão
+
+`@cf/meta/llama-3.3-70b-instruct-fp8-fast`
+
+O modelo pode ser trocado pela variável `CLOUDFLARE_AI_MODEL` no workflow.
+
+### Segurança
+
+A chamada de IA não roda em eventos de Pull Request. No PR, apenas a seleção local é validada. O Workers AI só é chamado em execução manual ou agendada depois que o workflow estiver no branch padrão e os Secrets estiverem configurados.

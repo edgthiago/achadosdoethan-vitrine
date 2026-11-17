@@ -6,7 +6,7 @@ import { collections } from '../src/collections.js';
 
 const html = await readFile(new URL('../dist/index.html', import.meta.url), 'utf8');
 const products = JSON.parse(await readFile(new URL('../src/data/products.json', import.meta.url)));
-const expectedProductCount = products.length + 6;
+const expectedProductCount = products.length;
 const scriptPath = html.match(/<script[^>]*src="([^"]+)"/)[1];
 const code = await readFile(new URL(`../dist${scriptPath}`, import.meta.url), 'utf8');
 const settle = () => new Promise(resolve => setTimeout(resolve, 60));

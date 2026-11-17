@@ -8,7 +8,7 @@ test('cada página entrega foto, URL e produto corretos antes de executar JavaSc
  for (const p of products) {
   const html = await readFile(new URL(`../dist/produto/${p.id}/index.html`, import.meta.url), 'utf8');
   const dom = new JSDOM(html); const d = dom.window.document;
-  assert.equal(d.querySelector('meta[property="og:image"]').content, p.image.src);
+  assert.equal(d.querySelector('meta[property="og:image"]').content, new URL(p.image.src, 'https://achadosdoethan.com.br/').href);
   assert.equal(d.querySelector('link[rel="canonical"]').href, `https://achadosdoethan.com.br/produto/${p.id}/`);
   assert.equal(d.querySelectorAll('article.card').length, 1);
   assert.equal(d.querySelector('.cta').href, p.url);

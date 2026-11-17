@@ -12,12 +12,24 @@ npm run dev
 ```
 
 - `src/data/products.json`: fonte única do catálogo (imagens, preços informados, selos e links de afiliado). Novos produtos entram somente aqui.
+- `src/siteConfig.js`: cupom (código, textos e data em que some da página), link do Instagram e limite de dias para o aviso de preço antigo.
 - `src/instagramPicks.js`: ordem dos achados vistos nos Reels (IDs de `products.json`).
 - `src/App.jsx`: componentes da vitrine, destaque, produtos e cupom.
 - `src/catalog.js`: busca, filtros, URLs e compartilhamento.
 - `src/styles.css`: identidade visual e enquadramento do destaque.
 - `public/assets/`: imagens existentes, preservadas na migração.
 - `index.html`: metadados do site e da prévia de compartilhamento.
+
+## Preços antigos
+
+Cards com preço consultado há mais de 30 dias mostram o aviso "Preço de dd/mm, pode ter mudado". Para listar os produtos a reconferir, do mais antigo para o mais novo:
+
+```sh
+npm run precos-antigos
+npm run precos-antigos -- 15   # outro limite, em dias
+```
+
+A data é lida do texto `priceNote` (formato dd/mm/aaaa); ao atualizar um preço, atualize também essa data.
 
 ## Verificar e publicar
 
@@ -27,7 +39,7 @@ npm test
 npm run deploy
 ```
 
-O build gera `dist/` e pré-renderiza o catálogo no HTML. Cada página `/produto/<id>/` recebe metadados de compartilhamento e dados estruturados `Product` (JSON-LD) para o Google; `robots.txt` aponta para o `sitemap.xml` gerado. O React hidrata a página no navegador; não há necessidade de servidor de renderização ou banco de dados.
+O build gera `dist/` e pré-renderiza o catálogo no HTML. Cada página `/produto/<id>/` recebe metadados de compartilhamento e dados estruturados `Product` (JSON-LD) para o Google; `robots.txt` aponta para o `sitemap.xml` gerado. Endereços inexistentes recebem `404.html` ("Esse achado saiu da vitrine"), e `manifest.webmanifest` permite adicionar a vitrine à tela inicial do celular. O React hidrata a página no navegador; não há necessidade de servidor de renderização ou banco de dados.
 
 O `wrangler.json` mantém o nome do Worker e o endereço workers.dev. Seu comando de build é executado automaticamente por `wrangler deploy`, portanto a integração existente pode continuar usando `npx wrangler deploy`. Não incluir tokens no repositório.
 

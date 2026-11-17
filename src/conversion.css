@@ -418,3 +418,14 @@
   .grid:not(.product-detail) .card .cta { font-size: 9.5px; }
   .instagram-picks .instagram-list > a { flex-basis: 68%; }
 }
+
+/* Aviso de preço consultado há muito tempo */
+.grid .card .price-age { margin: 4px 0 8px; font-size: 11px; line-height: 1.35; color: #8a5a00; }
+
+/* Contagem de produtos nos botões de categoria */
+.filters .filter-count { display: inline-block; min-width: 20px; margin-left: 4px; padding: 0 6px; border-radius: 10px; background: #e9e9df; color: var(--navy); font-size: 11px; font-weight: 700; line-height: 18px; text-align: center; }
+.filters button[aria-pressed="true"] .filter-count { background: #ffffff26; color: #fff; }
+
+/* Página não encontrada */
+.not-found > p:not(.eyebrow) { max-width: 560px; color: var(--muted); }
+.not-found .not-found-cta { display: inline-flex; padding: 12px 22px; margin: 8px 0 32px; }

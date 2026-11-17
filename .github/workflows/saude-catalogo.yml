@@ -1,0 +1,32 @@
+name: Saúde do catálogo
+on:
+  schedule:
+    - cron: '17 11 * * 1' # segundas, 08:17 em Brasília
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  relatorio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: relatorio
+        run: node scripts/saude-catalogo.mjs --saida relatorio.md
+      - name: Atualizar a issue "Saúde do catálogo"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROBLEMAS: ${{ steps.relatorio.outputs.problemas }}
+        run: |
+          titulo="Saúde do catálogo"
+          numero=$(gh issue list --state open --search "\"$titulo\" in:title" --json number,title --jq "map(select(.title == \"$titulo\")) | .[0].number // empty")
+          if [ "$PROBLEMAS" = "0" ]; then
+            if [ -n "$numero" ]; then gh issue close "$numero" --comment "Nenhum problema nesta semana. Fechando automaticamente."; fi
+          elif [ -n "$numero" ]; then
+            gh issue edit "$numero" --body-file relatorio.md
+          else
+            gh issue create --title "$titulo" --body-file relatorio.md
+          fi

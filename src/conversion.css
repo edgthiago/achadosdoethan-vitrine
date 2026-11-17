@@ -451,9 +451,8 @@ h1, h2 { font-weight: 800; letter-spacing: -.025em; }
 #conteudo > .instagram-picks .instagram-more:hover { border-color: var(--yellow); color: var(--yellow); }
 
 /* Imagens que não carregam: sem texto alternativo vazando no card */
+.visual { background: #f1eee5; }
 .visual img, .instagram-list img { color: transparent; font-size: 0; }
-.visual { background: #f1efe7 url("/favicon.svg") center / 56px no-repeat; }
-.visual:has(img) img { background: #fff; }
 
 /* Cards mais calmos */
 .grid .card { border-color: var(--line); }
@@ -473,9 +472,43 @@ h1, h2 { font-weight: 800; letter-spacing: -.025em; }
   #conteudo > .instagram-picks .instagram-profile { font-size: 13px; }
   .marketplace-filters { display: flex; width: 100%; }
   .marketplace-filters button { flex: 1; min-height: 36px; padding: 6px 4px; font-size: 13px; }
-  .visual { background-size: 40px; }
 }
 
 /* Página do produto: o h1 já traz nome e categoria; o card não repete */
 .grid.product-detail .card .card-category, .grid.product-detail .card h3 { display: none; }
 .product-page .eyebrow { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 600; }
+
+
+/* ===== Vitrine mais atual =====
+   1) Fotos: o fundo branco das lojas se funde a um tom único (mix-blend-mode), sem caixas brancas soltas.
+   2) Selo de desconto na foto; preço antigo riscado ao lado do preço.
+   3) Busca e categorias grudam no topo ao rolar. */
+:root { --photo-tint: #f1eee5; }
+.grid:not(.product-detail) .card .visual,
+.grid.product-detail .card .visual { background: var(--photo-tint); }
+.grid:not(.product-detail) .card .visual img,
+.grid.product-detail .card .visual img { background: transparent; mix-blend-mode: multiply; }
+.card { scroll-margin-top: 150px; }
+
+.visual .discount { position: absolute; left: 10px; bottom: 10px; z-index: 2; padding: 3px 9px; border-radius: 999px; background: var(--yellow); color: var(--navy); font: 800 13px/1.35 var(--display); letter-spacing: -.01em; box-shadow: 0 1px 5px #101e3829; pointer-events: none; }
+.grid .card .price-row .price-old { font-size: 12px; font-weight: 400; color: #768093; text-decoration: line-through; white-space: nowrap; }
+
+.catalog-sticky { position: sticky; top: 0; z-index: 30; margin: 0 -12px 6px; padding: 10px 12px 2px; background: color-mix(in srgb, var(--paper) 94%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
+.catalog-sticky .search { margin: 0; }
+.catalog-sticky .filters { flex-wrap: nowrap; overflow-x: auto; margin: 8px 0 0; padding: 1px 0 8px; scrollbar-width: none; }
+.catalog-sticky .filters::-webkit-scrollbar { display: none; }
+.catalog-sticky .filters button { flex: 0 0 auto; min-height: 40px; }
+.catalog-subbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 6px 0 4px; }
+.catalog-subbar .marketplace-filters, .catalog-subbar .catalog-actions { margin: 0; }
+.affiliate-note { margin: 4px 0 14px; }
+@media (min-width: 651px) { .catalog-subbar .filter-panel-body { left: auto; right: 0; } }
+
+@media (max-width: 650px) {
+  .catalog-sticky { margin: 0 -14px 4px; padding: 8px 14px 0; }
+  .catalog-sticky .search { min-height: 42px; }
+  .catalog-sticky .filters { margin-top: 6px; padding-bottom: 7px; }
+  .catalog-sticky .filters button { min-height: 38px; font-size: 12px; }
+  .visual .discount { left: 7px; bottom: 7px; padding: 2px 7px; font-size: 11px; }
+  .grid .card .price-row .price-old { font-size: 10px; }
+  .card { scroll-margin-top: 130px; }
+}

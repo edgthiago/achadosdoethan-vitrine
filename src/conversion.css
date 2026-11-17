@@ -429,3 +429,53 @@
 /* Página não encontrada */
 .not-found > p:not(.eyebrow) { max-width: 560px; color: var(--muted); }
 .not-found .not-found-cta { display: inline-flex; padding: 12px 22px; margin: 8px 0 32px; }
+
+/* ===== Acabamento profissional =====
+   Tipografia: Bricolage Grotesque em títulos e preços; corpo no texto do sistema.
+   Destaque único: a faixa "Viu no Instagram?" em marinho. O resto fica discreto. */
+:root { --display: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; --ink-soft: #4a5870; --line: #e3e1d6; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+h1, h2, .brand, .price-row strong, .coupon-card h2, .coupon-code { font-family: var(--display); }
+h1, h2 { font-weight: 800; letter-spacing: -.025em; }
+.brand { font-weight: 800; letter-spacing: -.01em; }
+
+/* Faixa de abertura */
+#conteudo > .instagram-picks { background: var(--navy); border: 0; color: #fff; padding: 32px; border-radius: 28px; }
+#conteudo > .instagram-picks .instagram-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+#conteudo > .instagram-picks h2 { color: var(--yellow); font-size: clamp(28px, 4.2vw, 46px); line-height: 1.02; letter-spacing: -.035em; }
+#conteudo > .instagram-picks .instagram-profile { flex-shrink: 0; color: #d7dfed; font-size: 14px; font-weight: 700; text-decoration: none; }
+#conteudo > .instagram-picks .instagram-profile:hover { color: #fff; text-decoration: underline; }
+#conteudo > .instagram-picks .instagram-list > a { background: #fff; border-color: transparent; }
+#conteudo > .instagram-picks .instagram-list > a:hover { border-color: var(--yellow); box-shadow: 0 0 0 2px var(--yellow); }
+#conteudo > .instagram-picks .instagram-more { background: transparent; color: #fff; border-color: #ffffff55; }
+#conteudo > .instagram-picks .instagram-more:hover { border-color: var(--yellow); color: var(--yellow); }
+
+/* Imagens que não carregam: sem texto alternativo vazando no card */
+.visual img, .instagram-list img { color: transparent; font-size: 0; }
+.visual { background: #f1efe7 url("/favicon.svg") center / 56px no-repeat; }
+.visual:has(img) img { background: #fff; }
+
+/* Cards mais calmos */
+.grid .card { border-color: var(--line); }
+.grid .card .card-category { text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 600; color: var(--ink-soft); }
+.grid .card .price-age { color: #6b7686; }
+
+/* Lojas como controle segmentado */
+.marketplace-filters { display: inline-flex; flex-wrap: nowrap; gap: 0; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: #fff; }
+.marketplace-filters button { min-height: 38px; border: 0; border-radius: 999px; padding: 6px 18px; background: transparent; font-size: 14px; }
+.marketplace-filters button[aria-pressed="true"] { background: var(--navy); color: #fff; }
+.marketplace-filters button[aria-pressed="true"]:last-child { background: #c83720; color: #fff; }
+
+@media (max-width: 650px) {
+  #conteudo > .instagram-picks { padding: 20px 16px; border-radius: 22px; margin: 12px 0 20px; }
+  #conteudo > .instagram-picks .instagram-head { flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  #conteudo > .instagram-picks h2 { font-size: 28px; }
+  #conteudo > .instagram-picks .instagram-profile { font-size: 13px; }
+  .marketplace-filters { display: flex; width: 100%; }
+  .marketplace-filters button { flex: 1; min-height: 36px; padding: 6px 4px; font-size: 13px; }
+  .visual { background-size: 40px; }
+}
+
+/* Página do produto: o h1 já traz nome e categoria; o card não repete */
+.grid.product-detail .card .card-category, .grid.product-detail .card h3 { display: none; }
+.product-page .eyebrow { text-transform: none; letter-spacing: 0; font-size: 14px; font-weight: 600; }

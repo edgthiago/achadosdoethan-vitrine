@@ -257,7 +257,7 @@ export default function App({ initialProductId = null, notFound = false }) {
       <header><Brand/><nav className="store-nav" aria-label="Ir para loja"><a href="/?loja=mercado-livre#produtos">Mercado Livre</a><a href="/?loja=shopee#produtos">Shopee</a></nav></header>
       <main id="conteudo">
         <section className={`instagram-picks${showAllInstagram ? ' expanded' : ''}`} aria-labelledby="instagram-title">
-          <div><h2 id="instagram-title">Viu no Instagram? Está aqui.</h2></div>
+          <div className="instagram-head"><h2 id="instagram-title">Viu no Instagram? Está aqui.</h2><a className="instagram-profile" href={instagram} target="_blank" rel="noopener noreferrer">@achadosdoethan ↗</a></div>
           <div className="instagram-list">{instagramPickIds.map(id => products.find(p => p.id === id)).filter(Boolean).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy" decoding="async"/><span><strong>{p.title}</strong><small>{p.price} · {p.marketplace === 'shopee' ? 'Shopee' : 'Mercado Livre'} · Ver detalhes ↗</small></span></a>)}</div>
           {instagramPickIds.length > 6 && <button type="button" className="instagram-more" aria-expanded={showAllInstagram} onClick={() => setShowAllInstagram(value => !value)}>{showAllInstagram ? 'Mostrar menos' : `Ver todos os ${instagramPickIds.length} achados do Instagram`}</button>}
         </section>

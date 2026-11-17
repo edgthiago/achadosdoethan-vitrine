@@ -125,3 +125,11 @@ test('relatório lista links quebrados, preços antigos e produtos sem data', ()
   assert.equal(clean.problems, 0);
   assert.match(clean.markdown, /Nenhum link com problema/);
 });
+
+test('preço antigo entra no produto novo e precisa ser maior que o atual', () => {
+  const p = buildProduct({ ...base, precoAntigo: '249,90', desconto: '25% OFF' }, products, now);
+  assert.equal(p.oldPrice, 'R$ 249,90');
+  assert.deepEqual(Object.keys(p).slice(Object.keys(p).indexOf('price'), Object.keys(p).indexOf('price') + 3), ['price', 'oldPrice', 'priceLabel']);
+  assert.equal(buildProduct(base, products, now).oldPrice, undefined);
+  assert.throws(() => buildProduct({ ...base, precoAntigo: '150' }, products, now), /deve ser maior/);
+});

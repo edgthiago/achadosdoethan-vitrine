@@ -68,3 +68,25 @@ export function isPriceStale(product, now, days = 30) {
   const checked = priceCheckedAt(product);
   return checked !== null && now - checked >= days * 86400000;
 }
+
+// "40% OFF no Pix" -> { discount: 40, rest: 'no Pix' }. O percentual vira selo na foto; o resto fica ao lado do preço.
+export function splitPriceLabel(label = '') {
+  const text = String(label || '');
+  const match = text.match(/(\d{1,2})\s*%\s*OFF/i);
+  if (!match) return { discount: null, rest: text.trim() };
+  const rest = text.replace(match[0], ' ').replace(/\s+/g, ' ').replace(/^[\s·+,-]+|[\s·+,-]+$/g, '');
+  const discount = Number(match[1]);
+  return discount > 0 && discount < 91 ? { discount, rest } : { discount: null, rest: text.trim() };
+}
+
+// Tira do selo o que já aparece em outro lugar: "Oferta" quando há selo de desconto e a própria categoria.
+export function cardBadge(product, hasDiscount = false) {
+  const parts = String(product.badge || '').split('·').map(part => part.trim()).filter(Boolean)
+    .filter(part => normalize(part) !== normalize(product.category))
+    .filter(part => !(hasDiscount && /^(em )?oferta$/.test(normalize(part))));
+  return parts.join(' · ') || null;
+}
+
+export function previousPrice(product) {
+  return product.oldPrice && priceValue({ price: product.oldPrice }) > priceValue(product) ? product.oldPrice : null;
+}

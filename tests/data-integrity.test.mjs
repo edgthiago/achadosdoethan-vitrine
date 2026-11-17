@@ -53,3 +53,12 @@ test('robots.txt indica o sitemap com todas as páginas', async () => {
   const sitemap = await readFile(new URL('../dist/sitemap.xml', import.meta.url), 'utf8');
   assert.equal(sitemap.match(/<loc>/g).length, products.length + 1);
 });
+
+test('preço antigo, quando existe, tem o mesmo formato e é maior que o preço atual', () => {
+  const withOld = products.filter(p => p.oldPrice);
+  assert.ok(withOld.length > 0);
+  for (const p of withOld) {
+    assert.match(p.oldPrice, /^R\$\s*[\d.,]+$/, `Formato inválido: ${p.id}`);
+    assert.ok(priceValue({ price: p.oldPrice }) > priceValue(p), `Preço antigo não é maior que o atual: ${p.id}`);
+  }
+});

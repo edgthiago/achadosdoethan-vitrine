@@ -29,7 +29,7 @@ npm run novo-produto -- --url https://meli.la/abc123 --titulo "Fritadeira elétr
   --preco 189,90 --categoria Casa --imagem https://http2.mlstatic.com/foto.webp --desconto "25% OFF"
 ```
 
-Para a Shopee, acrescente `--loja shopee` (o link deve ser `https://s.shopee.com.br/...`). O comando monta ID, busca, textos padrão, data da consulta e `addedAt`, recusa link da loja errada, categoria inexistente, ID ou link repetido e imagem local que não exista, e coloca o produto no início do catálogo. Use `--simular` para só visualizar. Outras opções: `--selo`, `--descricao`, `--dica`, `--palavras`, `--id`, `--largura`, `--altura`. Revise a descrição gerada antes de publicar.
+Para a Shopee, acrescente `--loja shopee` (o link deve ser `https://s.shopee.com.br/...`). O comando monta ID, busca, textos padrão, data da consulta e `addedAt`, recusa link da loja errada, categoria inexistente, ID ou link repetido e imagem local que não exista, e coloca o produto no início do catálogo. Use `--simular` para só visualizar. Com `--preco-antigo 249,90` o card mostra o preço antigo riscado. O percentual de `--desconto` (ex.: "25% OFF") vira o selo amarelo na foto. Outras opções: `--selo`, `--descricao`, `--dica`, `--palavras`, `--id`, `--largura`, `--altura`. Revise a descrição gerada antes de publicar.
 
 Toda segunda-feira, às 08:17 (Brasília), o workflow `Saúde do catálogo` abre ou atualiza uma issue com os preços consultados há mais de 30 dias, os produtos sem data e os links de afiliado que deixaram de existir (404/410 ou sem resposta). Respostas 403/429 das lojas não contam como problema, porque elas bloqueiam robôs. Quando não há nada a revisar, a issue é fechada sozinha. Também pode ser rodado na hora, em Actions → Saúde do catálogo → Run workflow, ou no terminal:
 

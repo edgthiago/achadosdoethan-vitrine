@@ -13,7 +13,7 @@ const { values } = parseArgs({
     url: { type: 'string' }, titulo: { type: 'string' }, preco: { type: 'string' }, categoria: { type: 'string' },
     imagem: { type: 'string' }, loja: { type: 'string' }, desconto: { type: 'string' }, selo: { type: 'string' },
     descricao: { type: 'string' }, dica: { type: 'string' }, palavras: { type: 'string' }, id: { type: 'string' },
-    largura: { type: 'string' }, altura: { type: 'string' }, simular: { type: 'boolean', default: false }
+    'preco-antigo': { type: 'string' }, largura: { type: 'string' }, altura: { type: 'string' }, simular: { type: 'boolean', default: false }
   }
 });
 
@@ -22,7 +22,7 @@ try {
   if (values.imagem?.startsWith('/')) {
     await access(new URL(`../public${values.imagem}`, import.meta.url)).catch(() => { throw new Error(`Arquivo não encontrado em public${values.imagem}.`); });
   }
-  const product = buildProduct(values, products);
+  const product = buildProduct({ ...values, precoAntigo: values['preco-antigo'] }, products);
   if (values.simular) {
     console.log(JSON.stringify(product, null, 2));
     console.log('\n(simulação: nada foi gravado)');

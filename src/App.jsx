@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import catalog from './data/products.json';
 import { collections, isRecent, readFavorites } from './collections.js';
-import { categories, readCatalogLocation, catalogUrl, shareProduct, productUrl, selectProducts, isPriceStale, priceCheckedAt } from './catalog.js';
+import { categories, readCatalogLocation, catalogUrl, shareProduct, productUrl, selectProducts, isPriceStale, priceCheckedAt, splitPriceLabel, cardBadge, previousPrice } from './catalog.js';
 import { coupon, instagramUrl as instagram, stalePriceDays } from './siteConfig.js';
 import { instagramPickIds } from './instagramPicks.js';
 
@@ -46,7 +46,9 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
   }
 
   const detailUrl = productUrl('https://achadosdoethan.com.br/', product.id);
-  const badge = showNewBadge ? 'Novo' : product.badge;
+  const { discount, rest: priceTag } = splitPriceLabel(product.priceLabel);
+  const badge = showNewBadge ? 'Novo' : cardBadge(product, discount !== null);
+  const oldPrice = previousPrice(product);
   const seller = product.marketplace === 'shopee' ? 'Shopee' : 'Mercado Livre';
 
   return <article id={product.id} className={`card${showNewBadge ? ' new-card' : ''}`} data-category={product.category} data-marketplace={product.marketplace || 'mercado-livre'} data-new={product.isNew ? 'true' : undefined} data-search={product.search}>
@@ -55,12 +57,13 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
         ? <img src={product.image.src} alt={product.image.alt} width={product.image.width} height={product.image.height} loading="lazy" decoding="async"/>
         : <a className="product-image-link" href={detailUrl} aria-label={`Ver detalhes de ${product.title}`}><img src={product.image.src} alt={product.image.alt} width={product.image.width} height={product.image.height} loading="lazy" decoding="async"/></a>}
       {badge && <span className="tag">{badge}</span>}
+      {discount !== null && <span className="discount" aria-label={`${discount}% de desconto`}>-{discount}%</span>}
       <button type="button" className="favorite" aria-label={`Salvar ${product.title}`} aria-pressed={saved} onClick={() => onFavorite(product.id)}>{saved ? '♥' : '♡'}</button>
     </div>
     <div className="copy">
       <p className="card-category">{product.category}</p>
       <h3><a className="product-title-link" href={detailUrl}>{product.title}</a></h3>
-      <div className="price-row"><strong>{product.price}</strong><span className="seller-label">{seller}</span>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
+      <div className="price-row"><strong>{product.price}</strong>{oldPrice && <s className="price-old"><i className="sr-only">Preço anterior </i>{oldPrice}</s>}<span className="seller-label">{seller}</span>{priceTag && priceTag !== 'Anúncio consultado' && <span>{priceTag}</span>}</div>
       {product.priceStale && !detailed && <p className="price-age">Preço de {product.priceCheckedLabel}, pode ter mudado</p>}
       {detailed && <p className="price-note">{product.priceStale && <strong>Preço consultado há mais de {stalePriceDays} dias. </strong>}{product.priceNote}</p>}
       {detailed && <details className="card-info" open>
@@ -99,7 +102,7 @@ function NotFound({ products }) {
   return <div className="wrap">
     <header><Brand/><a className="insta" href="/#produtos">Ver toda a vitrine ↗</a></header>
     <main className="product-page not-found">
-      <p className="eyebrow">ACHADOS DO ETHAN · Página não encontrada</p>
+      <p className="eyebrow">Achados do Ethan · Página não encontrada</p>
       <h1>Esse achado saiu da vitrine</h1>
       <p>O link pode estar antigo ou o produto foi removido. Veja os achados mais recentes ou procure na vitrine.</p>
       <a className="cta not-found-cta" href="/#produtos">Ver todos os achados</a>
@@ -243,7 +246,7 @@ export default function App({ initialProductId = null, notFound = false }) {
   if (selectedProduct) return <div className="wrap">
     <header><Brand/><a className="insta" href="/#produtos">Ver toda a vitrine ↗</a></header>
     <main className="product-page"><a href="/#produtos" className="back-link">← Voltar à vitrine</a>
-      <p className="eyebrow">ACHADOS DO ETHAN · {selectedProduct.category}</p>
+      <p className="eyebrow">Achados do Ethan · {selectedProduct.category}</p>
       <h1>{selectedProduct.title}</h1>
       <div className="grid product-detail"><ProductCard product={selectedProduct} notify={notify} detailed showNewBadge={recentBadgeIds.has(selectedProduct.id)} saved={favorites.includes(selectedProduct.id)} onFavorite={toggleFavorite}/></div>
       <section className="related"><h2>Mais achados de {selectedProduct.category.toLowerCase()}</h2><div className="instagram-list">{products.filter(p => p.category === selectedProduct.category && p.id !== selectedProduct.id).slice(0, 4).map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy"/><span><strong>{p.title}</strong><small>Ver detalhes ↗</small></span></a>)}</div></section>
@@ -264,13 +267,13 @@ export default function App({ initialProductId = null, notFound = false }) {
 
         <section id="produtos" aria-labelledby="products-title">
           <div className="intro-row"><div><h2 id="products-title">Escolha seu achado</h2><p className="affiliate-note">Achados selecionados para facilitar sua escolha.</p></div><span className="count" id="count" aria-live="polite">{visibleProducts.length} {visibleProducts.length === 1 ? 'produto' : 'produtos'}</span></div>
-          <label className="sr-only" htmlFor="search">Buscar produto</label>
-          <input ref={searchRef} id="search" className="search" type="search" placeholder="Buscar leggings, casa, tecnologia…" value={query} onChange={event => setQuery(event.target.value)}/>
-          <p className="affiliate-note">Alguns links são de afiliado.</p>
-
-          <div className="marketplace-filters" aria-label="Filtrar por loja">{[['todos','Todos'],['mercado-livre','Mercado Livre'],['shopee','Shopee']].map(([value,label]) => <button key={value} type="button" aria-pressed={marketplace === value} onClick={() => setMarketplace(value)}>{label}</button>)}</div>
-          <div className="filters" aria-label="Filtrar por categoria">{categories.filter(value => value === 'Todos' || category === value || categoryCounts[value] > 0).map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value} <span className="filter-count" aria-label={`${categoryCounts[value]} produtos`}>{categoryCounts[value]}</span></button>)}</div>
-
+          <div className="catalog-sticky">
+            <label className="sr-only" htmlFor="search">Buscar produto</label>
+            <input ref={searchRef} id="search" className="search" type="search" placeholder="Buscar leggings, casa, tecnologia…" value={query} onChange={event => setQuery(event.target.value)}/>
+            <div className="filters" aria-label="Filtrar por categoria">{categories.filter(value => value === 'Todos' || category === value || categoryCounts[value] > 0).map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value} <span className="filter-count" aria-label={`${categoryCounts[value]} produtos`}>{categoryCounts[value]}</span></button>)}</div>
+          </div>
+          <div className="catalog-subbar">
+            <div className="marketplace-filters" aria-label="Filtrar por loja">{[['todos','Todos'],['mercado-livre','Mercado Livre'],['shopee','Shopee']].map(([value,label]) => <button key={value} type="button" aria-pressed={marketplace === value} onClick={() => setMarketplace(value)}>{label}</button>)}</div>
           <div className="catalog-actions">
             <details ref={filterPanelRef} className="filter-panel">
               <summary>Filtros{activeFilterCount ? ` (${activeFilterCount})` : ''}</summary>
@@ -282,6 +285,9 @@ export default function App({ initialProductId = null, notFound = false }) {
             </details>
             <button type="button" className="saved-filter" aria-pressed={onlySaved} onClick={() => setOnlySaved(!onlySaved)}>♡ Favoritos{favorites.length ? ` (${favorites.length})` : ''}</button>
           </div>
+
+          </div>
+          <p className="affiliate-note">Alguns links são de afiliado.</p>
 
           {hasActiveFilters && <div className="catalog-toolbar"><p id="result-text" aria-live="polite">{resultText || `${visibleProducts.length} produtos`}</p><button type="button" id="reset" onClick={reset}>Limpar filtros</button></div>}
 

@@ -1,5 +1,5 @@
 // Funções puras para montar produtos novos e inseri-los no catálogo.
-import { categories, normalize } from '../../src/catalog.js';
+import { categories, normalize, priceValue } from '../../src/catalog.js';
 
 export const stores = {
   'mercado-livre': {
@@ -70,6 +70,8 @@ export function buildProduct(options, existing = [], now = new Date()) {
 
   const date = brazilDate(now);
   const price = formatPrice(options.preco);
+  const oldPrice = options.precoAntigo ? formatPrice(options.precoAntigo) : null;
+  if (oldPrice && priceValue({ price: oldPrice }) <= priceValue({ price })) throw new Error('O preço antigo (--preco-antigo) deve ser maior que o preço atual.');
   const product = {
     id,
     category: options.categoria,
@@ -85,6 +87,7 @@ export function buildProduct(options, existing = [], now = new Date()) {
     visualClass: 'visual',
     badge: options.selo || (marketplace === 'shopee' ? 'Shopee' : 'Oferta'),
     price,
+    ...(oldPrice ? { oldPrice } : {}),
     priceLabel: options.desconto || store.priceLabel,
     priceNote: store.priceNote(date),
     description: options.descricao || `${title}. Produto selecionado ${store.prep} ${store.label}; confira no anúncio as variações disponíveis.`,

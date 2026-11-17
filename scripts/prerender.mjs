@@ -39,5 +39,11 @@ for (const p of products) {
   await writeFile(new URL('index.html', dir), html);
   urls.push(url);
 }
+const notFoundHtml = template
+  .replace(/<title>.*?<\/title>/, '<title>Página não encontrada | Achados do Ethan</title>')
+  .replace(/<link rel="canonical" href="[^"]*">/, '<meta name="robots" content="noindex">')
+  .replace('<div id="root">', '<div id="root" data-not-found="true">')
+  .replace('<!--app-html-->', render(null, true));
+await writeFile(new URL('404.html', root), notFoundHtml);
 await writeFile(new URL('sitemap.xml', root), `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url => `<url><loc>${escape(url)}</loc></url>`).join('')}</urlset>`);
 console.log(`Vitrine e ${products.length} páginas de produto pré-renderizadas com metadados de compartilhamento.`);

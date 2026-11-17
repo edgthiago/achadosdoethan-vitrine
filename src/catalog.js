@@ -42,6 +42,7 @@ export function selectProducts(products, category, query, range = 'all', order =
   const selected = products.filter(p => matchesProduct(p, category, query) && priceValue(p) >= min && (max === Infinity || priceValue(p) < max));
   if (order === 'price-asc') selected.sort((a,b) => priceValue(a) - priceValue(b));
   if (order === 'price-desc') selected.sort((a,b) => priceValue(b) - priceValue(a));
+  if (order === 'recent') selected.sort((a,b) => (Date.parse(b.addedAt) || 0) - (Date.parse(a.addedAt) || 0));
   return selected;
 }
 
@@ -56,4 +57,14 @@ export async function shareProduct(product, href, nav) {
     return 'copied';
   }
   return url;
+}
+
+export function priceCheckedAt(product) {
+  const match = String(product.priceNote || '').match(/(\d{2})\/(\d{2})\/(\d{4})/);
+  return match ? Date.parse(`${match[3]}-${match[2]}-${match[1]}T00:00:00-03:00`) : null;
+}
+
+export function isPriceStale(product, now, days = 30) {
+  const checked = priceCheckedAt(product);
+  return checked !== null && now - checked >= days * 86400000;
 }

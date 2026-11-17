@@ -4,10 +4,11 @@ import App from './App.jsx';
 import './styles.css';
 import './conversion.css';
 
-const initialProductId = document.getElementById('root')?.dataset.product || null;
 const root = document.getElementById('root');
+const initialProductId = root?.dataset.product || null;
+const notFound = root?.dataset.notFound === 'true';
 if (root.hasChildNodes() && root.querySelector('.wrap')) {
-  hydrateRoot(root, <App initialProductId={initialProductId}/>);
+  hydrateRoot(root, <App initialProductId={initialProductId} notFound={notFound}/>);
 } else {
-  createRoot(root).render(<App initialProductId={initialProductId}/>);
+  createRoot(root).render(<App initialProductId={initialProductId} notFound={notFound}/>);
 }

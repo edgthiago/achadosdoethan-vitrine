@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import catalog from './data/products.json';
 import { collections, isRecent, readFavorites } from './collections.js';
-import { categories, readCatalogLocation, catalogUrl, shareProduct, productUrl, selectProducts } from './catalog.js';
+import { categories, readCatalogLocation, catalogUrl, shareProduct, productUrl, selectProducts, isPriceStale, priceCheckedAt } from './catalog.js';
+import { coupon, instagramUrl as instagram, stalePriceDays } from './siteConfig.js';
 import { instagramPickIds } from './instagramPicks.js';
 
-const instagram = 'https://www.instagram.com/achadosdoethan/';
-const coupon = 'POUPAMAIS';
 
 function Brand() {
   return <a className="brand" href="/" aria-label="Achados do Ethan, página inicial">
@@ -18,20 +17,20 @@ function Coupon({ notify }) {
   async function copyCoupon() {
     try {
       if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(coupon);
-      notify(`Cupom ${coupon} copiado!`);
+      await navigator.clipboard.writeText(coupon.code);
+      notify(`Cupom ${coupon.code} copiado!`);
     } catch {
-      window.prompt('Copie o cupom:', coupon);
+      window.prompt('Copie o cupom:', coupon.code);
     }
   }
   return <section className="coupon-card" aria-labelledby="coupon-title">
     <div className="coupon-copy">
-      <span className="coupon-label">Cupom para Mercado Livre</span>
-      <h2 id="coupon-title">25% OFF em produtos participantes</h2>
-      <p>Para produtos participantes do Mercado Livre pelo nosso link de afiliado. Confira a disponibilidade e a aplicação no carrinho.</p>
-      <details className="coupon-terms"><summary>Ver condições do cupom</summary><p>Divulgado como válido até 25/11/2026, sujeito a encerramento antecipado. Compra mínima de R$ 1. Desconto máximo de R$ 500. A aplicação depende da sua conta e dos produtos participantes; confirme no carrinho.</p></details>
+      <span className="coupon-label">{coupon.label}</span>
+      <h2 id="coupon-title">{coupon.title}</h2>
+      <p>{coupon.text}</p>
+      <details className="coupon-terms"><summary>Ver condições do cupom</summary><p>{coupon.terms}</p></details>
     </div>
-    <div className="coupon-action"><span className="coupon-code">{coupon}</span><button type="button" id="copy-coupon" aria-label={`Copiar o cupom ${coupon}`} onClick={copyCoupon}>Copiar cupom</button></div>
+    <div className="coupon-action"><span className="coupon-code">{coupon.code}</span><button type="button" id="copy-coupon" aria-label={`Copiar o cupom ${coupon.code}`} onClick={copyCoupon}>Copiar cupom</button></div>
   </section>;
 }
 
@@ -62,7 +61,8 @@ function ProductCard({ product, notify, saved = false, onFavorite, detailed = fa
       <p className="card-category">{product.category}</p>
       <h3><a className="product-title-link" href={detailUrl}>{product.title}</a></h3>
       <div className="price-row"><strong>{product.price}</strong><span className="seller-label">{seller}</span>{product.priceLabel && product.priceLabel !== 'Anúncio consultado' && <span>{product.priceLabel}</span>}</div>
-      {detailed && <p className="price-note">{product.priceNote}</p>}
+      {product.priceStale && !detailed && <p className="price-age">Preço de {product.priceCheckedLabel}, pode ter mudado</p>}
+      {detailed && <p className="price-note">{product.priceStale && <strong>Preço consultado há mais de {stalePriceDays} dias. </strong>}{product.priceNote}</p>}
       {detailed && <details className="card-info" open>
         <summary>Detalhes e cuidados antes de comprar</summary>
         <p>{product.description}</p>
@@ -94,10 +94,27 @@ function ShoppingGuide() {
   </>;
 }
 
-export default function App({ initialProductId = null }) {
+function NotFound({ products }) {
+  const picks = instagramPickIds.map(id => products.find(p => p.id === id)).filter(Boolean).slice(0, 4);
+  return <div className="wrap">
+    <header><Brand/><a className="insta" href="/#produtos">Ver toda a vitrine ↗</a></header>
+    <main className="product-page not-found">
+      <p className="eyebrow">ACHADOS DO ETHAN · Página não encontrada</p>
+      <h1>Esse achado saiu da vitrine</h1>
+      <p>O link pode estar antigo ou o produto foi removido. Veja os achados mais recentes ou procure na vitrine.</p>
+      <a className="cta not-found-cta" href="/#produtos">Ver todos os achados</a>
+      {picks.length > 0 && <section className="related"><h2>Achados do Instagram</h2><div className="instagram-list">{picks.map(p => <a key={p.id} href={productUrl('https://achadosdoethan.com.br/', p.id)}><img src={p.image.src} alt={p.image.alt} width="100" height="100" loading="lazy"/><span><strong>{p.title}</strong><small>{p.price} · Ver detalhes ↗</small></span></a>)}</div></section>}
+    </main>
+  </div>;
+}
+
+export default function App({ initialProductId = null, notFound = false }) {
   const [clock, setClock] = useState(null);
   const [showAllInstagram, setShowAllInstagram] = useState(false);
-  const products = useMemo(() => catalog.map(p => ({ ...p, isNew: clock !== null && isRecent(p, clock) })), [clock]);
+  const products = useMemo(() => catalog.map(p => {
+    const priceStale = clock !== null && isPriceStale(p, clock, stalePriceDays);
+    return { ...p, isNew: clock !== null && isRecent(p, clock), priceStale, priceCheckedLabel: priceStale ? new Date(priceCheckedAt(p)).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' }) : '' };
+  }), [clock]);
   const recentBadgeIds = useMemo(() => new Set(products.filter(p => p.isNew).sort((a, b) => Date.parse(b.addedAt) - Date.parse(a.addedAt)).slice(0, 4).map(p => p.id)), [products]);
   const [favorites, setFavorites] = useState([]);
   const [onlySaved, setOnlySaved] = useState(false);
@@ -187,13 +204,13 @@ export default function App({ initialProductId = null }) {
   }, [products, scrollToProduct]);
 
   useEffect(() => {
-    if (locationReady && !initialProductId) {
+    if (locationReady && !initialProductId && !notFound) {
       const url = new URL(catalogUrl(window.location.href, category, query));
       collectionId ? url.searchParams.set('colecao', collectionId) : url.searchParams.delete('colecao');
       marketplace === 'todos' ? url.searchParams.delete('loja') : url.searchParams.set('loja', marketplace);
       window.history.replaceState(null, '', url);
     }
-  }, [category, query, marketplace, locationReady, collectionId, initialProductId]);
+  }, [category, query, marketplace, locationReady, collectionId, initialProductId, notFound]);
 
   function notify(message) {
     setToast(message);
@@ -214,9 +231,14 @@ export default function App({ initialProductId = null }) {
 
   const visibleProducts = useMemo(() => selectProducts(products, category, query, priceRange, order).filter(p => (marketplace === 'todos' || (p.marketplace || 'mercado-livre') === marketplace) && (!collection || collection.ids.includes(p.id)) && (!onlySaved || favorites.includes(p.id))), [products, category, query, priceRange, order, marketplace, collection, onlySaved, favorites]);
   const resultText = onlySaved ? 'Seus favoritos' : collection ? collection.title : query.trim() ? `Resultados para “${query.trim()}”` : category === 'Novos' ? 'Adicionados recentemente' : category !== 'Todos' ? `Categoria: ${category}` : '';
+  const categoryCounts = useMemo(() => {
+    const inStore = products.filter(p => marketplace === 'todos' || (p.marketplace || 'mercado-livre') === marketplace);
+    return Object.fromEntries(categories.map(value => [value, value === 'Todos' ? inStore.length : inStore.filter(p => value === 'Novos' ? p.isNew : p.category === value).length]));
+  }, [products, marketplace]);
   const activeFilterCount = (priceRange !== 'all' ? 1 : 0) + (order !== 'featured' ? 1 : 0);
   const hasActiveFilters = marketplace !== 'todos' || category !== 'Todos' || query.trim() || priceRange !== 'all' || order !== 'featured' || collectionId || onlySaved;
 
+  if (notFound) return <NotFound products={products}/>;
   const selectedProduct = products.find(p => p.id === initialProductId);
   if (selectedProduct) return <div className="wrap">
     <header><Brand/><a className="insta" href="/#produtos">Ver toda a vitrine ↗</a></header>
@@ -247,14 +269,14 @@ export default function App({ initialProductId = null }) {
           <p className="affiliate-note">Alguns links são de afiliado.</p>
 
           <div className="marketplace-filters" aria-label="Filtrar por loja">{[['todos','Todos'],['mercado-livre','Mercado Livre'],['shopee','Shopee']].map(([value,label]) => <button key={value} type="button" aria-pressed={marketplace === value} onClick={() => setMarketplace(value)}>{label}</button>)}</div>
-          <div className="filters" aria-label="Filtrar por categoria">{categories.map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value}</button>)}</div>
+          <div className="filters" aria-label="Filtrar por categoria">{categories.filter(value => value === 'Todos' || category === value || categoryCounts[value] > 0).map(value => <button key={value} type="button" data-filter={value} aria-pressed={category === value} onClick={() => { setCategory(value); setCollectionId(''); }}>{value} <span className="filter-count" aria-label={`${categoryCounts[value]} produtos`}>{categoryCounts[value]}</span></button>)}</div>
 
           <div className="catalog-actions">
             <details ref={filterPanelRef} className="filter-panel">
               <summary>Filtros{activeFilterCount ? ` (${activeFilterCount})` : ''}</summary>
               <div className="filter-panel-body">
                 <label>Faixa de preço<select value={priceRange} onChange={e => setPriceRange(e.target.value)}><option value="all">Todos os preços</option><option value="under50">Menos de R$ 50</option><option value="from50to100">R$ 50 a menos de R$ 100</option><option value="from100to300">R$ 100 a menos de R$ 300</option><option value="over300">R$ 300 ou mais</option></select></label>
-                <label>Ordenar por<select value={order} onChange={e => setOrder(e.target.value)}><option value="featured">Destaques da vitrine</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label>
+                <label>Ordenar por<select value={order} onChange={e => setOrder(e.target.value)}><option value="featured">Destaques da vitrine</option><option value="recent">Mais recentes</option><option value="price-asc">Menor preço</option><option value="price-desc">Maior preço</option></select></label>
                 <button type="button" className="filter-panel-clear" disabled={!activeFilterCount} onClick={() => { setPriceRange('all'); setOrder('featured'); if (filterPanelRef.current) filterPanelRef.current.open = false; }}>Limpar filtros</button>
               </div>
             </details>
@@ -267,7 +289,7 @@ export default function App({ initialProductId = null }) {
           {visibleProducts.length === 0 && <div className="empty" id="empty" role="status"><strong>{onlySaved && !favorites.length ? 'Seus favoritos começam aqui' : 'Nenhum achado encontrado'}</strong><p>{onlySaved && !favorites.length ? 'Toque no coração de um produto para salvar e encontrar depois.' : 'Tente outro nome ou limpe os filtros.'}</p><button type="button" id="empty-reset" onClick={reset}>Ver todos os achados</button></div>}
         </section>
 
-        {marketplace !== 'shopee' && (!clock || clock < Date.parse('2026-11-26T00:00:00-03:00')) && <Coupon notify={notify}/>}
+        {marketplace !== 'shopee' && (!clock || clock < Date.parse(coupon.hideAfter)) && <Coupon notify={notify}/>}
         <ShoppingGuide/>
       </main>
       <footer><div className="footrow"><strong>Achados do Ethan</strong><a href={instagram} target="_blank" rel="noopener noreferrer">@achadosdoethan ↗</a></div><p>Transparência: esta página contém links de afiliado do Mercado Livre e da Shopee. Não somos uma loja oficial dessas plataformas. Consulte todas as condições no anúncio antes de comprar.</p><span>© 2026 Achados do Ethan</span></footer>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://achadosdoethan.com.br/sitemap.xml

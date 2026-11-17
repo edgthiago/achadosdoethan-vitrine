@@ -11,7 +11,8 @@ npm ci
 npm run dev
 ```
 
-- `src/data/products.json`: catálogo, imagens, preços informados e links de afiliado.
+- `src/data/products.json`: fonte única do catálogo (imagens, preços informados, selos e links de afiliado). Novos produtos entram somente aqui.
+- `src/instagramPicks.js`: ordem dos achados vistos nos Reels (IDs de `products.json`).
 - `src/App.jsx`: componentes da vitrine, destaque, produtos e cupom.
 - `src/catalog.js`: busca, filtros, URLs e compartilhamento.
 - `src/styles.css`: identidade visual e enquadramento do destaque.
@@ -26,7 +27,7 @@ npm test
 npm run deploy
 ```
 
-O build gera `dist/` e pré-renderiza o catálogo no HTML. O React hidrata a página no navegador; não há necessidade de servidor de renderização ou banco de dados.
+O build gera `dist/` e pré-renderiza o catálogo no HTML. Cada página `/produto/<id>/` recebe metadados de compartilhamento e dados estruturados `Product` (JSON-LD) para o Google; `robots.txt` aponta para o `sitemap.xml` gerado. O React hidrata a página no navegador; não há necessidade de servidor de renderização ou banco de dados.
 
 O `wrangler.json` mantém o nome do Worker e o endereço workers.dev. Seu comando de build é executado automaticamente por `wrangler deploy`, portanto a integração existente pode continuar usando `npx wrangler deploy`. Não incluir tokens no repositório.
 

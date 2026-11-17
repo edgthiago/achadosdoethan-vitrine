@@ -20,6 +20,26 @@ npm run dev
 - `public/assets/`: imagens existentes, preservadas na migração.
 - `index.html`: metadados do site e da prévia de compartilhamento.
 
+## Rotina de trabalho (automatizada)
+
+Cadastrar um produto novo, sem editar JSON à mão:
+
+```sh
+npm run novo-produto -- --url https://meli.la/abc123 --titulo "Fritadeira elétrica 4 L" \
+  --preco 189,90 --categoria Casa --imagem https://http2.mlstatic.com/foto.webp --desconto "25% OFF"
+```
+
+Para a Shopee, acrescente `--loja shopee` (o link deve ser `https://s.shopee.com.br/...`). O comando monta ID, busca, textos padrão, data da consulta e `addedAt`, recusa link da loja errada, categoria inexistente, ID ou link repetido e imagem local que não exista, e coloca o produto no início do catálogo. Use `--simular` para só visualizar. Outras opções: `--selo`, `--descricao`, `--dica`, `--palavras`, `--id`, `--largura`, `--altura`. Revise a descrição gerada antes de publicar.
+
+Toda segunda-feira, às 08:17 (Brasília), o workflow `Saúde do catálogo` abre ou atualiza uma issue com os preços consultados há mais de 30 dias, os produtos sem data e os links de afiliado que deixaram de existir (404/410 ou sem resposta). Respostas 403/429 das lojas não contam como problema, porque elas bloqueiam robôs. Quando não há nada a revisar, a issue é fechada sozinha. Também pode ser rodado na hora, em Actions → Saúde do catálogo → Run workflow, ou no terminal:
+
+```sh
+npm run saude-catalogo                  # relatório completo
+npm run saude-catalogo -- --sem-links   # só preços, sem acessar as lojas
+```
+
+Limite conhecido: a checagem vê se o endereço responde, não se o anúncio foi pausado ou ficou sem estoque; para isso continue conferindo o preço no anúncio.
+
 ## Preços antigos
 
 Cards com preço consultado há mais de 30 dias mostram o aviso "Preço de dd/mm, pode ter mudado". Para listar os produtos a reconferir, do mais antigo para o mais novo:

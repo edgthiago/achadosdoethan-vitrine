@@ -138,6 +138,16 @@
       a.target = "_blank";
       a.rel = "noopener";
     });
+    document.querySelectorAll("[data-whats-empresa]").forEach(function (a) {
+      a.href = linkWhats("Olá, Tamiles! Vim pelo site da Impactar e quero agendar uma conversa sobre treinamento para a minha empresa.");
+    });
+    var flutuante = document.querySelector(".flutuante");
+    var hero = document.querySelector(".hero");
+    if (flutuante && hero && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entradas) {
+        flutuante.hidden = entradas[0].isIntersecting;
+      }, { threshold: 0 }).observe(hero);
+    }
     document.querySelectorAll("[data-whats-texto]").forEach(function (a) {
       a.href = linkWhats(msg);
       a.textContent = WHATS_EXIBIDO;

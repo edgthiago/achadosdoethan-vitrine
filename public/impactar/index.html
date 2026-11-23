@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Impactar | Descubra seu perfil de liderança</title>
+  <meta name="description" content="Responda 12 perguntas, descubra seu perfil comportamental e saiba como liderar e se comunicar melhor com seu time. Treinamentos de liderança e desenvolvimento pessoal com a Impactar.">
+  <meta property="og:title" content="Descubra seu perfil de liderança | Impactar">
+  <meta property="og:description" content="Diagnóstico gratuito de 12 perguntas, com resultado na hora.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/marca.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="pular" href="#diagnostico">Ir para o diagnóstico</a>
+
+  <header class="topo">
+    <a class="logo" href="#" aria-label="Impactar, início">
+      <img src="assets/marca.svg" alt="" width="34" height="34">
+      <span>Impactar</span>
+    </a>
+    <a class="botao botao-leve" data-whats href="#">Falar no WhatsApp</a>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="titulo-hero">
+      <div class="hero-circulos" aria-hidden="true">
+        <span class="c c-azul"></span><span class="c c-amarelo"></span><span class="c c-vermelho"></span>
+      </div>
+      <div class="hero-texto">
+        <h1 id="titulo-hero">Como você lidera? E como o seu time entende você?</h1>
+        <p class="lead">Responda 12 perguntas rápidas e descubra seu perfil comportamental. Você recebe o resultado na hora, com dicas de como se comunicar com cada perfil da equipe.</p>
+        <ul class="hero-fatos">
+          <li>3 minutos</li>
+          <li>Gratuito</li>
+          <li>Sem cadastro</li>
+        </ul>
+      </div>
+
+      <div class="quiz" id="diagnostico">
+        <div class="quiz-topo">
+          <p class="quiz-progresso" id="progresso" aria-live="polite">Pergunta 1 de 12</p>
+          <div class="barra" aria-hidden="true"><span id="barra-preenchida"></span></div>
+        </div>
+        <form id="form-quiz" novalidate>
+          <fieldset>
+            <legend id="pergunta"></legend>
+            <div class="opcoes" id="opcoes"></div>
+          </fieldset>
+          <div class="quiz-acoes">
+            <button type="button" class="botao botao-texto" id="voltar" hidden>Voltar</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="resultado" id="resultado" aria-labelledby="titulo-resultado" hidden>
+      <div class="coluna">
+        <p class="selo" id="res-selo"></p>
+        <h2 id="titulo-resultado"></h2>
+        <p class="lead" id="res-resumo"></p>
+
+        <div class="res-grade">
+          <div>
+            <h3>Sua força como líder</h3>
+            <p id="res-forca"></p>
+          </div>
+          <div>
+            <h3>Onde ter cuidado</h3>
+            <p id="res-cuidado"></p>
+          </div>
+          <div>
+            <h3>Seu próximo passo</h3>
+            <p id="res-passo"></p>
+          </div>
+        </div>
+
+        <h3 class="res-sub">Como falar com cada perfil do seu time</h3>
+        <dl class="perfis" id="res-dicas"></dl>
+
+        <div class="res-cta">
+          <div>
+            <h3>Quer transformar esse resultado em prática?</h3>
+            <p>Conte seu nome e envie o resultado para a Tamiles. Ela responde pelo WhatsApp e mostra qual treinamento combina com o seu momento.</p>
+          </div>
+          <div class="res-cta-acao">
+            <label for="nome">Seu nome (opcional)</label>
+            <input id="nome" name="nome" type="text" autocomplete="given-name" maxlength="60" placeholder="Como posso te chamar?">
+            <a class="botao botao-principal" id="res-whats" href="#" target="_blank" rel="noopener">Enviar meu resultado no WhatsApp</a>
+            <button type="button" class="botao botao-texto" id="refazer">Refazer o diagnóstico</button>
+          </div>
+        </div>
+        <p class="nota">Este diagnóstico mostra tendências de comportamento e serve para reflexão. Não é um teste psicológico nem define quem você é. Suas respostas ficam apenas no seu navegador.</p>
+      </div>
+    </section>
+
+    <section class="trilha" id="trilha" aria-labelledby="titulo-trilha">
+      <div class="coluna">
+        <h2 id="titulo-trilha">Uma trilha em duas etapas</h2>
+        <p class="lead">Antes de liderar pessoas, a gente se conhece. Depois, aprende a conduzir o time com clareza e resultado.</p>
+        <ol class="etapas">
+          <li>
+            <h3>EU S.A.: a empresa mais importante da sua vida</h3>
+            <p>Valores, propósito e responsabilidade pessoal. Você faz a Linha da Vida, define o que não abre mão e sai com um plano de 90 dias.</p>
+            <p class="detalhe">1 encontro de 4 horas</p>
+          </li>
+          <li>
+            <h3>Liderança que gera resultados</h3>
+            <p>Comunicação, inteligência emocional, conflitos, feedback, decisão com dados e delegação sem microgestão.</p>
+            <p class="detalhe">4 dias de treinamento, com acompanhamento em 30, 60 e 90 dias</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="perfis-secao" aria-labelledby="titulo-perfis">
+      <div class="coluna">
+        <h2 id="titulo-perfis">Os quatro perfis que o diagnóstico mapeia</h2>
+        <ul class="lista-perfis">
+          <li class="p-comunicador"><strong>Comunicador</strong> extrovertido, criativo e ágil. Gosta de interação e de ser reconhecido.</li>
+          <li class="p-executor"><strong>Executor</strong> decidido e orientado a resultados. Competitivo e focado em metas.</li>
+          <li class="p-planejador"><strong>Planejador</strong> calmo, disciplinado e constante. Valoriza rotina e estabilidade.</li>
+          <li class="p-analista"><strong>Analista</strong> detalhista e rigoroso. Busca excelência e entende cada tarefa a fundo.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="sobre" id="sobre" aria-labelledby="titulo-sobre">
+      <div class="coluna sobre-grade">
+        <div>
+          <h2 id="titulo-sobre">Quem conduz</h2>
+        </div>
+        <div>
+          <p class="lead">Sou Tamiles. Acredito que grandes resultados nascem da combinação entre propósito, disciplina e aprendizado contínuo, e que o copo do conhecimento deve estar sempre vazio para receber novas ideias.</p>
+          <ul class="credenciais">
+            <li>Formada em Processos Gerenciais</li>
+            <li>Pós-graduanda em Neuromarketing e Liderança</li>
+            <li>Master Practitioner em PNL</li>
+            <li>Mais de 10 anos em atendimento ao cliente e 5 anos no setor comercial</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="final" aria-labelledby="titulo-final">
+      <div class="coluna">
+        <h2 id="titulo-final">Vamos conversar sobre o seu time?</h2>
+        <p class="lead">Fale direto com a Tamiles pelo WhatsApp e tire suas dúvidas sobre os treinamentos.</p>
+        <a class="botao botao-principal" data-whats href="#" target="_blank" rel="noopener">Chamar no WhatsApp</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="coluna rodape-linha">
+      <p>© <span id="ano"></span> Impactar. Treinamento e desenvolvimento.</p>
+      <p>WhatsApp: <a data-whats-texto href="#" target="_blank" rel="noopener">(85) 98856-5067</a></p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

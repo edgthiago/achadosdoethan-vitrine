@@ -25,9 +25,12 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: smooth; overflow-x: clip; }
+main { overflow-x: clip; }
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
+  overflow-x: clip;
+  overflow-wrap: break-word;
   background: var(--fundo);
   color: var(--tinta);
   font-family: var(--fonte-texto);
@@ -167,7 +170,7 @@ legend { font: 700 1.4rem/1.25 var(--fonte-titulo); letter-spacing: -0.01em; pad
 
 /* Faixa de credenciais */
 .credenciais-faixa { background: var(--tinta); color: var(--fundo); }
-.credenciais-faixa ul { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 28px; padding: 22px 0; margin-block: 0; }
+.credenciais-faixa ul { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 28px; padding: 22px 0; margin-block: 0; }
 .credenciais-faixa li { font-size: .98rem; line-height: 1.35; }
 .credenciais-faixa strong { display: block; font: 800 1.35rem/1.2 var(--fonte-titulo); letter-spacing: -0.01em; color: var(--amarelo); }
 
@@ -283,9 +286,10 @@ details > p { padding: 0 44px 22px 0; color: var(--tinta-suave); max-width: 64ch
 @media (max-width: 900px) {
   .menu { display: none; }
   .topo-linha { justify-content: space-between; }
-  .hero { grid-template-columns: 1fr; gap: 36px; padding-bottom: 56px; }
-  .res-grade, .res-cta, .etapas, .sobre-grade, .mudancas, .passos, .empresas-grade { grid-template-columns: 1fr; }
-  .credenciais-faixa ul { grid-template-columns: repeat(2, 1fr); }
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 36px; padding-bottom: 56px; }
+  .res-grade, .res-cta, .etapas, .sobre-grade, .mudancas, .passos, .empresas-grade { grid-template-columns: minmax(0, 1fr); }
+  .credenciais-faixa ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 18px; }
+  .credenciais-faixa strong { font-size: 1.05rem; }
   .processo .coluna { padding: 40px 24px; }
   .mudanca, .programa, .processo, .sobre, .duvidas, .empresas { padding-top: 64px; }
   .citacao, .final { margin-top: 64px; }

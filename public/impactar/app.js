@@ -179,22 +179,75 @@
       label.appendChild(input);
       label.appendChild(span);
       box.appendChild(label);
-      input.addEventListener("change", function () { escolher(op[0]); });
+      // Teclado (setas, Espaço) só marca a resposta; quem usa mouse ou toque avança sozinho.
+      input.addEventListener("change", function () {
+        respostas[atual] = op[0];
+        atualizarProxima();
+      });
+      input.addEventListener("click", function (e) {
+        if (e.detail > 0) window.setTimeout(avancar, 220);
+      });
     });
+    atualizarProxima();
   }
 
-  function escolher(letra) {
-    respostas[atual] = letra;
-    window.setTimeout(function () {
-      if (atual < PERGUNTAS.length - 1) {
-        atual++;
-        desenharPergunta();
-        var primeira = document.querySelector(".opcao input");
-        if (primeira) primeira.focus({ preventScroll: true });
-      } else {
-        concluir();
-      }
-    }, 220);
+  function atualizarProxima() {
+    var b = el("proxima");
+    b.disabled = !respostas[atual];
+    b.textContent = atual === PERGUNTAS.length - 1 ? "Ver meu resultado" : "Próxima pergunta";
+  }
+
+  function avancar() {
+    if (!respostas[atual]) return;
+    if (atual < PERGUNTAS.length - 1) {
+      atual++;
+      desenharPergunta();
+      var primeira = document.querySelector(".opcao input");
+      if (primeira) primeira.focus({ preventScroll: true });
+    } else {
+      concluir();
+    }
+  }
+
+  // Mapa dos perfis: ritmo (rápido/calmo) x foco (tarefas/pessoas)
+  var MAPA = [
+    { chave: "E", classe: "q-executor", texto: "Decide rápido e entrega resultado." },
+    { chave: "C", classe: "q-comunicador", texto: "Conecta, anima e inspira o time." },
+    { chave: "A", classe: "q-analista", texto: "Busca precisão e decide com critério." },
+    { chave: "P", classe: "q-planejador", texto: "Traz constância, calma e segurança." }
+  ];
+
+  function criarMapa(container, destaque) {
+    if (!container) return;
+    container.innerHTML = "";
+    var fig = document.createElement("figure");
+    fig.className = "mapa";
+    function t(cls, txt) {
+      var d = document.createElement("span");
+      d.className = cls;
+      d.textContent = txt;
+      return d;
+    }
+    fig.appendChild(t("eixo eixo-esq", "Foco em tarefas"));
+    fig.appendChild(t("eixo eixo-dir", "Foco em pessoas"));
+    fig.appendChild(t("eixo eixo-topo", "Ritmo rápido"));
+    fig.appendChild(t("eixo eixo-base", "Ritmo calmo"));
+    var grade = document.createElement("div");
+    grade.className = "mapa-grade";
+    MAPA.forEach(function (q) {
+      var d = document.createElement("div");
+      d.className = "quad " + q.classe + (q.chave === destaque ? " destaque" : "");
+      var h = document.createElement("h3");
+      h.textContent = PERFIS[q.chave].nome;
+      var p = document.createElement("p");
+      p.textContent = q.texto;
+      d.appendChild(h);
+      d.appendChild(p);
+      if (q.chave === destaque) d.appendChild(t("voce", "Você está aqui"));
+      grade.appendChild(d);
+    });
+    fig.appendChild(grade);
+    container.appendChild(fig);
   }
 
   function calcular() {
@@ -237,6 +290,7 @@
     });
 
     atualizarLinkResultado();
+    criarMapa(el("mapa-resultado"), p1);
     var secao = el("resultado");
     secao.hidden = false;
     secao.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
@@ -269,6 +323,8 @@
   document.addEventListener("DOMContentLoaded", function () {
     configurarLinksGerais();
     desenharPergunta();
+    criarMapa(el("mapa-geral"), null);
+    el("proxima").addEventListener("click", avancar);
     el("voltar").addEventListener("click", function () {
       if (atual > 0) { atual--; desenharPergunta(); }
     });

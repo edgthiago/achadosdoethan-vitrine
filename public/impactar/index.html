@@ -62,6 +62,7 @@
           </fieldset>
           <div class="quiz-acoes">
             <button type="button" class="botao botao-texto" id="voltar" hidden>Voltar</button>
+            <button type="button" class="botao botao-principal" id="proxima" disabled>Próxima pergunta</button>
           </div>
         </form>
       </div>
@@ -97,6 +98,9 @@
           </div>
         </div>
 
+        <h3 class="res-sub">Onde você está no mapa dos perfis</h3>
+        <div id="mapa-resultado" class="mapa-wrap mapa-escuro"></div>
+
         <h3 class="res-sub">Como falar com cada perfil do seu time</h3>
         <dl class="perfis" id="res-dicas"></dl>
 
@@ -113,6 +117,18 @@
           </div>
         </div>
         <p class="nota">Este diagnóstico mostra tendências de comportamento e serve para reflexão. Não é um teste psicológico nem define quem você é. Suas respostas ficam apenas no seu navegador.</p>
+      </div>
+    </section>
+
+    <section class="perfis-mapa" id="perfis" aria-labelledby="titulo-perfis">
+      <div class="coluna perfis-grade">
+        <div>
+          <h2 id="titulo-perfis">Quatro jeitos de liderar e de se comunicar</h2>
+          <p class="lead">Cada pessoa tem um ritmo (rápido ou calmo) e um foco (tarefas ou pessoas). O cruzamento dos dois forma os quatro perfis que o diagnóstico mapeia.</p>
+          <p class="perfis-nota">Perfil é tendência, não rótulo. A mesma pessoa muda de comportamento conforme o contexto.</p>
+          <a class="botao botao-principal" href="#diagnostico">Descobrir o meu perfil</a>
+        </div>
+        <div id="mapa-geral" class="mapa-wrap"></div>
       </div>
     </section>
 
